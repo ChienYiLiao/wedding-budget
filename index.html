@@ -96,11 +96,10 @@
           const card   = document.getElementById(`card-${u.id}`);
           const avatar = document.getElementById(`avatar-${u.id}`);
 
-          // 載入既有頭像
+          // 載入頭像（自訂 > 預設圖片 > emoji）
           const saved = State.getAvatar(u.id);
-          if (saved) {
-            avatar.innerHTML = `<img src="${saved}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
-          }
+          const src = saved || u.defaultAvatar;
+          avatar.innerHTML = `<img src="${src}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<span style=\\"font-size:36px\\">${u.emoji}</span>')">`;
 
           // 點擊選擇
           card.addEventListener('click', () => {
