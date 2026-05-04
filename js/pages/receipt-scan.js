@@ -89,8 +89,15 @@ const ReceiptScan = (() => {
   }
 
   async function _scan(dataUrl, mimeType) {
-    const gasUrl = State.get('gasUrl');
-    if (!gasUrl) { Toast.error('尚未設定 GAS URL'); return; }
+    const geminiKey = State.get('geminiKey');
+    if (!geminiKey) {
+      document.getElementById('scan-result-area').innerHTML = `
+        <div class="receipt-result">
+          <div class="receipt-result-title" style="color:var(--color-expense)">尚未設定 Gemini API Key</div>
+          <div style="font-size:var(--font-size-sm);color:var(--color-text-muted)">請到「說明」頁的連線設定輸入 Gemini API Key</div>
+        </div>`;
+      return;
+    }
 
     const parsed = Utils.parseDataUrl(dataUrl);
     if (!parsed) { Toast.error('圖片格式錯誤'); return; }
@@ -101,18 +108,60 @@ const ReceiptScan = (() => {
         <div class="loader-spinner" style="margin:var(--space-md) auto"></div>
       </div>`;
 
+    const prompt = `你是一個收據辨識助手。請分析這張收據圖片（可能是台灣的雲端發票、紙本發票或一般收據），以繁體中文回傳以下 JSON 格式（只回傳 JSON，不要多餘文字）：
+{"merchant":"店名","amount":金額數字,"items":"品項（多個用·分隔）","taxType":"含稅/未稅/免稅","invoiceNo":"發票號碼（若無填空字串）","suggestedCategory":"訂婚戒指/結婚對戒/喜餅訂婚餅/婚宴飯店/聘金/嫁妝/喜帖/結婚小物/婚紗攝影/新娘秘書造型/婚禮布置花藝/蜜月旅遊/婚車/主持人音響/其他（選一個）"}`;
+
+    const models = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-latest', 'gemini-flash-latest'];
+    const errs = [];
+
     try {
       Loader.show();
-      const result = await API.scanReceipt(parsed.data, parsed.mimeType || mimeType);
-      _scannedData = result.data || {};
-      _renderResult(_scannedData);
-      _isDirty = true;
-    } catch (e) {
+      for (const model of models) {
+        const ep = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`;
+        let res;
+        try {
+          res = await fetch(ep, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [
+                { text: prompt },
+                { inline_data: { mime_type: parsed.mimeType || mimeType || 'image/jpeg', data: parsed.data } },
+              ]}],
+              generationConfig: { temperature: 0.1, maxOutputTokens: 1024 },
+            }),
+          });
+        } catch (fe) {
+          errs.push(`[${model}] 網路錯誤`);
+          continue;
+        }
+
+        const body = await res.json();
+        if (body.error) {
+          errs.push(`[${model}] ${body.error.message || 'API 錯誤'}`);
+          continue;
+        }
+
+        try {
+          let text = (body.candidates?.[0]?.content?.parts?.[0]?.text || '').trim();
+          text = text.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '').trim();
+          const data = JSON.parse(text);
+          _scannedData = data;
+          _renderResult(data);
+          _isDirty = true;
+          return;
+        } catch (pe) {
+          errs.push(`[${model}] JSON 解析失敗`);
+        }
+      }
+
+      // 所有模型均失敗
       document.getElementById('scan-result-area').innerHTML = `
         <div class="receipt-result">
           <div class="receipt-result-title" style="color:var(--color-expense)">辨識失敗</div>
-          <div style="font-size:var(--font-size-sm);color:var(--color-text-muted)">${e.message}</div>
+          <div style="font-size:var(--font-size-sm);color:var(--color-text-muted)">${errs.join('<br>')}</div>
         </div>`;
+      document.getElementById('scan-action-area').style.display = 'flex';
     } finally {
       Loader.hide();
     }

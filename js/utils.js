@@ -101,6 +101,13 @@ const Utils = {
     return `<img src="${src}" style="${style}" alt="${user.name}" onerror="${fallback}">`;
   },
 
+  // 格式化時間（從 Sheets 回傳的 "1899-12-30 10:30" 或 "10:30" 都只取 HH:MM）
+  formatTime(val) {
+    if (!val) return '';
+    const m = String(val).match(/(\d{1,2}:\d{2})/);
+    return m ? m[1] : '';
+  },
+
   // 截斷文字
   truncate(str, max = 20) {
     if (!str) return '';

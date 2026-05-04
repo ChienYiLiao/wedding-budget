@@ -94,6 +94,16 @@ const Guide = (() => {
         </div>
         <button class="btn btn-primary btn-full" id="guide-gas-save">儲存並測試連線</button>
         <div id="guide-gas-status" style="margin-top:var(--space-sm);font-size:var(--font-size-sm);color:var(--color-text-muted)"></div>
+
+        <div class="form-group" style="margin-top:var(--space-lg)">
+          <label class="form-label">Gemini API Key（AI 收據辨識）</label>
+          <input class="form-input" id="guide-gemini-input" type="password" placeholder="AIza...">
+          <div style="font-size:var(--font-size-xs);color:var(--color-text-muted);margin-top:4px">
+            至 <a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--color-primary)">Google AI Studio</a> 免費取得，儲存於本機不會上傳
+          </div>
+        </div>
+        <button class="btn btn-secondary btn-full" id="guide-gemini-save">儲存 Gemini API Key</button>
+        <div id="guide-gemini-status" style="margin-top:var(--space-sm);font-size:var(--font-size-sm);color:var(--color-text-muted)"></div>
       </div>
 
       <div style="text-align:center;padding:var(--space-xl) 0;color:var(--color-text-light);font-size:var(--font-size-xs)">
@@ -103,6 +113,19 @@ const Guide = (() => {
     // GAS 設定
     const gasInput = document.getElementById('guide-gas-input');
     gasInput.value = State.get('gasUrl') || '';
+
+    // Gemini API Key 設定
+    const geminiInput = document.getElementById('guide-gemini-input');
+    geminiInput.value = State.get('geminiKey') || '';
+    document.getElementById('guide-gemini-save').addEventListener('click', () => {
+      const key = geminiInput.value.trim();
+      if (!key) { Toast.error('請輸入 Gemini API Key'); return; }
+      State.set({ geminiKey: key });
+      const st = document.getElementById('guide-gemini-status');
+      st.style.color = 'var(--color-income)';
+      st.textContent = '✅ Gemini API Key 已儲存';
+      Toast.success('Gemini API Key 已儲存');
+    });
 
     document.getElementById('guide-gas-save').addEventListener('click', async () => {
       const url = gasInput.value.trim();
