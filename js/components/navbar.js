@@ -13,7 +13,10 @@ const Navbar = (() => {
 
     nav.innerHTML = ITEMS.map(item => {
       if (item.fab) {
-        return `<button class="nav-fab" id="nav-fab-add" aria-label="新增記帳">＋</button>`;
+        return `<div class="nav-fab-group">
+          <button class="nav-fab" id="nav-fab-add" aria-label="手動記帳">＋</button>
+          <button class="nav-fab-scan" id="nav-fab-scan" aria-label="掃描收據">📷</button>
+        </div>`;
       }
       return `
         <button class="nav-item" data-hash="${item.hash}">
@@ -28,6 +31,10 @@ const Navbar = (() => {
 
     document.getElementById('nav-fab-add')?.addEventListener('click', () => {
       if (typeof AddTransaction !== 'undefined') AddTransaction.open();
+    });
+
+    document.getElementById('nav-fab-scan')?.addEventListener('click', () => {
+      if (typeof ReceiptScan !== 'undefined') ReceiptScan.open();
     });
   }
 

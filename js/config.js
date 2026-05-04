@@ -7,7 +7,7 @@ const CONFIG = {
 
   USERS: [
     { id: 'pigpig', name: '豬豬', emoji: '🐷', defaultAvatar: 'assets/default-avatars/pigpig.png' },
-    { id: 'gungun', name: '滾滾', emoji: '🐹', defaultAvatar: 'assets/default-avatars/gungun.png' },
+    { id: 'gungun', name: '滾滾', emoji: '🧚‍♀️', defaultAvatar: 'assets/default-avatars/gungun.png' },
   ],
 
   EXPENSE_CATEGORIES: [

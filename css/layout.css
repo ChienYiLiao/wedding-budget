@@ -137,7 +137,13 @@
   filter: drop-shadow(0 2px 4px rgba(201,149,106,0.4));
 }
 
-/* FAB - add button */
+/* FAB group - add + scan */
+.nav-fab-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
 .nav-fab {
   width: 52px; height: 52px;
   border-radius: 50%;
@@ -152,6 +158,21 @@
   flex-shrink: 0;
 }
 .nav-fab:active { transform: scale(0.92); box-shadow: 0 2px 8px rgba(201,149,106,0.4); }
+.nav-fab-scan {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--color-bg-card);
+  color: var(--color-primary);
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--color-primary);
+  box-shadow: 0 2px 8px rgba(201,149,106,0.25);
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+.nav-fab-scan:active { transform: scale(0.92); box-shadow: 0 1px 4px rgba(201,149,106,0.2); }
 
 /* ===== Login Page ===== */
 .login-page {

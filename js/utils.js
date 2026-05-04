@@ -96,7 +96,8 @@ const Utils = {
     const user = CONFIG.getUserById(userId);
     const src = State.getAvatar(userId) || user.defaultAvatar;
     const style = `width:${size}px;height:${size}px;display:block;border-radius:50%;object-fit:cover;flex-shrink:0;`;
-    const fallback = `this.outerHTML='<span style=\\"width:${size}px;height:${size}px;display:inline-flex;align-items:center;justify-content:center;font-size:${Math.round(size*0.6)}px;border-radius:50%;background:var(--color-border);flex-shrink:0;\\">${user.emoji}</span>'`;
+    const spanStyle = `width:${size}px;height:${size}px;display:inline-flex;align-items:center;justify-content:center;font-size:${Math.round(size*0.6)}px;border-radius:50%;background:var(--color-border);flex-shrink:0;`;
+    const fallback = `this.outerHTML='<span style=&quot;${spanStyle}&quot;>${user.emoji}</span>'`;
     return `<img src="${src}" style="${style}" alt="${user.name}" onerror="${fallback}">`;
   },
 
