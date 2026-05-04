@@ -1,0 +1,83 @@
+:root {
+  /* === 溫暖輕色系 Elegant Mist === */
+  --color-bg:           #FDF6EE;
+  --color-bg-card:      #FFF9F5;
+  --color-bg-elevated:  #FFF4EC;
+  --color-bg-input:     #F7EDE3;
+  --color-bg-overlay:   rgba(74, 55, 40, 0.45);
+
+  --color-primary:      #C9956A;
+  --color-primary-light:#E8C4A0;
+  --color-primary-dark: #A87550;
+  --color-secondary:    #D4889A;
+  --color-secondary-light:#F0C4CF;
+
+  --color-income:       #7AA88A;
+  --color-income-light: #B8D8C2;
+  --color-expense:      #C28A8A;
+  --color-expense-light:#E8C4C4;
+
+  --color-text:         #4A3728;
+  --color-text-muted:   #8A7060;
+  --color-text-light:   #B4A090;
+  --color-border:       #EDE3D8;
+  --color-border-strong:#D9C8B8;
+
+  --color-white:        #FFFFFF;
+  --color-shadow:       rgba(74, 55, 40, 0.12);
+  --color-shadow-strong:rgba(74, 55, 40, 0.22);
+
+  /* 支付方式 */
+  --color-cash:         #C4A87A;
+  --color-credit-card:  #8A9EC4;
+  --color-easy-card:    #7AA88A;
+  --color-bank-transfer:#A08EC4;
+
+  /* === 間距 === */
+  --space-xs:   4px;
+  --space-sm:   8px;
+  --space-md:   16px;
+  --space-lg:   24px;
+  --space-xl:   32px;
+  --space-2xl:  48px;
+
+  /* === 圓角 === */
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --radius-xl:   24px;
+  --radius-2xl:  32px;
+  --radius-full: 9999px;
+
+  /* === 字型 === */
+  --font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-size-xs:   11px;
+  --font-size-sm:   13px;
+  --font-size-md:   15px;
+  --font-size-lg:   17px;
+  --font-size-xl:   20px;
+  --font-size-2xl:  24px;
+  --font-size-3xl:  32px;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semi:   600;
+  --font-weight-bold:   700;
+
+  /* === 陰影 === */
+  --shadow-sm:  0 1px 4px var(--color-shadow);
+  --shadow-md:  0 4px 16px var(--color-shadow);
+  --shadow-lg:  0 8px 32px var(--color-shadow-strong);
+  --shadow-xl:  0 16px 48px var(--color-shadow-strong);
+
+  /* === 過渡 === */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.25s ease;
+  --transition-slow: 0.35s ease;
+
+  /* === Layout === */
+  --navbar-height: 64px;
+  --topbar-height: 56px;
+  --max-width: 480px;
+  --sheet-border-radius: 24px 24px 0 0;
+}
