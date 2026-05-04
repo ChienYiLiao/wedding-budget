@@ -94,12 +94,10 @@ const Utils = {
   // 人員頭像 HTML
   avatarHtml(userId, size = 24) {
     const user = CONFIG.getUserById(userId);
-    const dataUrl = State.getAvatar(userId);
-    const style = `width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;background:var(--color-border);`;
-    if (dataUrl) {
-      return `<img src="${dataUrl}" style="${style}" alt="${user.name}">`;
-    }
-    return `<span style="${style};display:inline-flex;align-items:center;justify-content:center;font-size:${Math.round(size * 0.6)}px;">${user.emoji}</span>`;
+    const src = State.getAvatar(userId) || user.defaultAvatar;
+    const style = `width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;background:var(--color-border);flex-shrink:0;`;
+    const fallback = `this.style.display='none';this.insertAdjacentHTML('afterend','<span style=\\"${style}display:inline-flex;align-items:center;justify-content:center;font-size:${Math.round(size*0.6)}px;\\">${user.emoji}</span>')`;
+    return `<img src="${src}" style="${style}" alt="${user.name}" onerror="${fallback}">`;
   },
 
   // 截斷文字

@@ -9,8 +9,8 @@ const State = (() => {
     transactionsCache: {},  // { 'YYYY-MM': [...] }
     statsData: null,
     settings: {
-      weddingDate: '',   // 'YYYY-MM-DD'
-      totalBudget: 0,
+      weddingDate: '2027-05-03',
+      totalBudget: 1000000,
     },
   };
 
@@ -22,7 +22,16 @@ const State = (() => {
       const saved = localStorage.getItem(LS_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        _state = { ...defaults, ...parsed };
+        const savedSettings = parsed.settings || {};
+        _state = {
+          ...defaults,
+          ...parsed,
+          settings: {
+            ...defaults.settings,
+            ...(savedSettings.weddingDate ? { weddingDate: savedSettings.weddingDate } : {}),
+            ...(savedSettings.totalBudget ? { totalBudget: savedSettings.totalBudget } : {}),
+          },
+        };
       }
     } catch (_) { /* ignore */ }
   }

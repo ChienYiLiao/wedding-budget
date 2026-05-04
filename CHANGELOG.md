@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.0.1] - 2026-05-04
+### Added
+- 豬豬/滾滾預設頭像圖片（自訂 > 預設圖片 > emoji 三層 fallback）
+### Changed
+- 婚禮日期預設為 2027-05-03（可在 Dashboard 點擊倒數區塊修改）
+- 婚禮總預算預設為 NT$1,000,000（可在 Dashboard 點擊預算進度條修改）
+
 ## [1.0.0] - 2026-05-04
 ### Added
 - 初始版本發布

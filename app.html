@@ -198,11 +198,8 @@
       const nameEl = document.getElementById('topbar-name');
       const dataUrl = State.getAvatar(currentUser);
       if (el) {
-        if (dataUrl) {
-          el.innerHTML = `<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
-        } else {
-          el.textContent = user.emoji;
-        }
+        const src = dataUrl || user.defaultAvatar;
+        el.innerHTML = `<img src="${src}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.style.display='none';this.parentElement.textContent='${user.emoji}'">`;
       }
       if (nameEl) nameEl.textContent = user.name;
     }
