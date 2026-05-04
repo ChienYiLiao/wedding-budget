@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>婚禮記帳 💍</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- Top Bar -->
+  <header id="topbar">
+    <button id="topbar-back" class="hidden">‹</button>
+    <span id="topbar-title">婚禮記帳</span>
+    <div id="topbar-user">
+      <div class="topbar-avatar" id="topbar-avatar">🐷</div>
+      <span class="topbar-name" id="topbar-name"></span>
+    </div>
+  </header>
+
+  <!-- Pages -->
+  <main id="main-content">
+    <div id="page-dashboard" class="page"></div>
+    <div id="page-history"   class="page"></div>
+    <div id="page-stats"     class="page"></div>
+    <div id="page-guide"     class="page"></div>
+  </main>
+
+  <!-- Bottom Nav -->
+  <nav id="navbar"></nav>
+
+</div><!-- #app -->
+
+<!-- ===== Add Transaction Bottom Sheet ===== -->
+<div class="sheet-overlay" id="add-sheet-overlay"></div>
+<div class="bottom-sheet"  id="add-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title">新增記帳</span>
+    <button class="sheet-close" id="add-sheet-close">✕</button>
+  </div>
+  <div class="sheet-body">
+    <!-- Type Tab -->
+    <div class="tab-switch" style="margin-bottom:var(--space-lg)">
+      <button class="tab-btn expense-tab active" id="add-type-expense">💸 支出</button>
+      <button class="tab-btn income-tab"         id="add-type-income">💰 收入</button>
+    </div>
+    <!-- Amount -->
+    <div class="form-group">
+      <label class="form-label">金額（NT$）</label>
+      <div class="amount-input-wrap">
+        <span class="amount-prefix">$</span>
+        <input type="number" id="add-amount" placeholder="0" inputmode="decimal">
+      </div>
+    </div>
+    <!-- Category -->
+    <div class="form-group">
+      <label class="form-label">類別</label>
+      <div class="category-grid" id="add-cat-grid"></div>
+    </div>
+    <!-- Payment -->
+    <div class="form-group">
+      <label class="form-label">支付方式</label>
+      <div class="payment-chips" id="add-payment-chips">
+        <button class="pay-chip selected" data-pay="cash">💵 現金</button>
+        <button class="pay-chip"          data-pay="credit_card">💳 信用卡</button>
+        <button class="pay-chip"          data-pay="easy_card">🎫 悠遊卡</button>
+        <button class="pay-chip"          data-pay="bank_transfer">🏦 轉帳</button>
+      </div>
+    </div>
+    <!-- Merchant & Note -->
+    <div class="form-group">
+      <label class="form-label">店名（選填）</label>
+      <input class="form-input" id="add-merchant" type="text" placeholder="例：xx 婚紗攝影">
+    </div>
+    <div class="form-group">
+      <label class="form-label">備註（選填）</label>
+      <input class="form-input" id="add-note" type="text" placeholder="備註說明">
+    </div>
+    <!-- Date -->
+    <div class="form-group">
+      <label class="form-label">日期</label>
+      <input class="form-input" id="add-date" type="date">
+    </div>
+    <!-- User -->
+    <div class="form-group">
+      <label class="form-label">記帳人</label>
+      <div class="user-chips" id="add-user-chips">
+        <button class="user-chip" data-user="pigpig">
+          <span class="user-chip-avatar">🐷</span><span>豬豬</span>
+        </button>
+        <button class="user-chip" data-user="gungun">
+          <span class="user-chip-avatar">🐹</span><span>滾滾</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="sheet-footer">
+    <button class="btn btn-primary btn-full btn-lg" id="add-submit">儲存記帳</button>
+  </div>
+</div>
+
+<!-- ===== Receipt Scan Bottom Sheet ===== -->
+<div class="sheet-overlay" id="scan-sheet-overlay"></div>
+<div class="bottom-sheet"  id="scan-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title">掃描收據</span>
+    <button class="sheet-close" id="scan-sheet-close">✕</button>
+  </div>
+  <div class="sheet-body">
+    <div id="scan-preview"></div>
+    <div id="scan-action-area" style="display:flex;gap:var(--space-md);margin-bottom:var(--space-md)">
+      <button class="btn btn-secondary btn-full" id="scan-btn-camera">📷 拍攝</button>
+      <button class="btn btn-secondary btn-full" id="scan-btn-upload">🖼 上傳</button>
+    </div>
+    <div id="scan-result-area"></div>
+  </div>
+  <div class="sheet-footer">
+    <button class="btn btn-primary btn-full btn-lg" id="scan-submit" style="display:none">確認儲存</button>
+  </div>
+</div>
+
+<!-- ===== Modal ===== -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box" id="modal-box">
+    <div class="modal-title"   id="modal-title"></div>
+    <div class="modal-message" id="modal-message"></div>
+    <input class="modal-input" id="modal-input" type="text" style="display:none">
+    <div class="modal-actions" id="modal-actions"></div>
+  </div>
+</div>
+
+<!-- ===== Loader ===== -->
+<div class="loader-overlay" id="loader-overlay">
+  <div class="loader-spinner"></div>
+</div>
+
+<!-- ===== Toast ===== -->
+<div id="toast-container"></div>
+
+<!-- ===== Cropper Modal ===== -->
+<div class="cropper-modal" id="cropper-modal">
+  <div class="cropper-area">
+    <img id="cropper-img" src="" alt="裁切頭像">
+  </div>
+  <div class="cropper-controls">
+    <button class="btn btn-secondary" id="cropper-cancel">取消</button>
+    <button class="btn btn-primary"   id="cropper-confirm">確認裁切</button>
+  </div>
+</div>
+
+<!-- ===== Libraries ===== -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.css">
+
+<!-- ===== App Scripts ===== -->
+<script src="js/config.js"></script>
+<script src="js/state.js"></script>
+<script src="js/router.js"></script>
+<script src="js/api.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/components/toast.js"></script>
+<script src="js/components/loader.js"></script>
+<script src="js/components/modal.js"></script>
+<script src="js/components/navbar.js"></script>
+<script src="js/components/avatar-cropper.js"></script>
+<script src="js/pages/dashboard.js"></script>
+<script src="js/pages/add-transaction.js"></script>
+<script src="js/pages/receipt-scan.js"></script>
+<script src="js/pages/history.js"></script>
+<script src="js/pages/stats.js"></script>
+<script src="js/pages/guide.js"></script>
+
+<script>
+  // ===== App Bootstrap =====
+  (function () {
+    // 未登入時跳回首頁
+    const currentUser = State.get('currentUser');
+    if (!currentUser) {
+      window.location.replace('index.html');
+      return;
+    }
+
+    // 更新 topbar 使用者
+    function updateTopbarUser() {
+      const user = CONFIG.getUserById(currentUser);
+      const el = document.getElementById('topbar-avatar');
+      const nameEl = document.getElementById('topbar-name');
+      const dataUrl = State.getAvatar(currentUser);
+      if (el) {
+        if (dataUrl) {
+          el.innerHTML = `<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+        } else {
+          el.textContent = user.emoji;
+        }
+      }
+      if (nameEl) nameEl.textContent = user.name;
+    }
+    updateTopbarUser();
+
+    // 初始化 Navbar
+    Navbar.render();
+
+    // 掃描按鈕掛到歷史頁（可選：也可在 Navbar 掃描圖示）
+    // 直接讓 receipt-scan 以 Sheet 形式開啟
+
+    // 註冊路由
+    Router.register('dashboard', { onEnter: () => Dashboard.show(), onLeave: () => Dashboard.hide() });
+    Router.register('history',   { onEnter: () => History.show(),   onLeave: () => History.hide() });
+    Router.register('stats',     { onEnter: () => Stats.show(),     onLeave: () => Stats.hide() });
+    Router.register('guide',     { onEnter: () => Guide.show(),     onLeave: () => Guide.hide() });
+
+    Router.init();
+
+    // 設定初始使用者到 AddTransaction
+    AddTransaction.open && document.addEventListener('DOMContentLoaded', () => {});
+  })();
+</script>
+</body>
+</html>

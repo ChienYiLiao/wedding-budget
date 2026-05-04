@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>婚禮記帳 💍</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <style>
+    body { background: var(--color-bg); }
+    .login-page { max-width: var(--max-width); margin: 0 auto; }
+    .long-press-hint {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-light);
+      margin-top: 4px;
+    }
+    /* 頭像長按漣漪 */
+    .login-user-avatar.pressing {
+      animation: pulse 0.6s ease;
+    }
+    @keyframes pulse {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(0.92); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-page">
+    <div class="login-brand">
+      <div class="login-brand-emoji">💍</div>
+      <div class="login-brand-title">婚禮記帳</div>
+      <div class="login-brand-subtitle">豬豬與滾滾的幸福帳本</div>
+    </div>
+
+    <div class="login-users">
+      <div class="login-user-card" data-user="pigpig" id="card-pigpig">
+        <div class="login-user-avatar" id="avatar-pigpig">🐷</div>
+        <div class="login-user-name" id="name-pigpig">豬豬</div>
+        <div class="long-press-hint">長按換頭像</div>
+      </div>
+      <div class="login-user-card" data-user="gungun" id="card-gungun">
+        <div class="login-user-avatar" id="avatar-gungun">🐹</div>
+        <div class="login-user-name" id="name-gungun">滾滾</div>
+        <div class="long-press-hint">長按換頭像</div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-full login-enter-btn" id="enter-btn" disabled>選擇使用者後進入</button>
+    <p class="login-hint" style="margin-top:var(--space-sm)">資料儲存於 Google Sheets · 兩人共用同一帳號</p>
+  </div>
+
+  <!-- Cropper Modal -->
+  <div class="cropper-modal" id="cropper-modal">
+    <div class="cropper-area">
+      <img id="cropper-img" src="" alt="裁切頭像">
+    </div>
+    <div class="cropper-controls">
+      <button class="btn btn-secondary" id="cropper-cancel">取消</button>
+      <button class="btn btn-primary" id="cropper-confirm">確認裁切</button>
+    </div>
+  </div>
+
+  <!-- 頭像操作選單 -->
+  <div class="modal-overlay" id="avatar-action-overlay">
+    <div class="modal-box" id="avatar-action-box">
+      <div class="modal-title" id="avatar-action-title">更換頭像</div>
+      <div class="modal-actions" style="flex-direction:column;gap:var(--space-sm)">
+        <button class="btn btn-secondary btn-full" id="avatar-action-camera">📷 拍攝照片</button>
+        <button class="btn btn-secondary btn-full" id="avatar-action-album">🖼 從相簿選擇</button>
+        <button class="btn btn-ghost btn-full" id="avatar-action-cancel">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.css">
+  <script src="js/config.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/components/avatar-cropper.js"></script>
+  <script>
+    const Login = (() => {
+      let _selected = null;
+      let _longPressTimer = null;
+      let _targetUser = null;
+
+      function init() {
+        CONFIG.USERS.forEach(u => {
+          const card   = document.getElementById(`card-${u.id}`);
+          const avatar = document.getElementById(`avatar-${u.id}`);
+
+          // 載入既有頭像
+          const saved = State.getAvatar(u.id);
+          if (saved) {
+            avatar.innerHTML = `<img src="${saved}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+          }
+
+          // 點擊選擇
+          card.addEventListener('click', () => {
+            document.querySelectorAll('.login-user-card').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+            _selected = u.id;
+            const btn = document.getElementById('enter-btn');
+            btn.disabled = false;
+            btn.textContent = `以 ${u.name} 身份進入`;
+          });
+
+          // 長按換頭像
+          card.addEventListener('pointerdown', () => {
+            _longPressTimer = setTimeout(() => {
+              _targetUser = u.id;
+              document.getElementById('avatar-action-title').textContent = `更換 ${u.name} 的頭像`;
+              document.getElementById('avatar-action-overlay').classList.add('visible');
+            }, 600);
+          });
+          card.addEventListener('pointerup',    () => clearTimeout(_longPressTimer));
+          card.addEventListener('pointercancel',() => clearTimeout(_longPressTimer));
+          card.addEventListener('pointermove',  () => clearTimeout(_longPressTimer));
+        });
+
+        document.getElementById('enter-btn').addEventListener('click', () => {
+          if (!_selected) return;
+          State.set({ currentUser: _selected });
+          window.location.href = 'app.html#dashboard';
+        });
+
+        // 頭像操作選單
+        document.getElementById('avatar-action-camera').addEventListener('click', () => {
+          _closeAvatarMenu();
+          AvatarCropper.openCamera(_targetUser, _onAvatarDone);
+        });
+        document.getElementById('avatar-action-album').addEventListener('click', () => {
+          _closeAvatarMenu();
+          AvatarCropper.open(_targetUser, _onAvatarDone);
+        });
+        document.getElementById('avatar-action-cancel').addEventListener('click', _closeAvatarMenu);
+        document.getElementById('avatar-action-overlay').addEventListener('click', e => {
+          if (e.target === e.currentTarget) _closeAvatarMenu();
+        });
+      }
+
+      function _closeAvatarMenu() {
+        document.getElementById('avatar-action-overlay').classList.remove('visible');
+      }
+
+      function _onAvatarDone(dataUrl) {
+        const avatar = document.getElementById(`avatar-${_targetUser}`);
+        if (avatar) avatar.innerHTML = `<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+      }
+
+      return { init };
+    })();
+
+    Login.init();
+  </script>
+</body>
+</html>
