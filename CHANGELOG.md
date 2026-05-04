@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.0.4] - 2026-05-04
+### Fixed
+- 歷史記錄時間欄位顯示 "1899-12-30" 問題：新增 formatTime() 過濾 Sheets 回傳的日期基準值，只顯示 HH:MM
+- AI 收據辨識改為瀏覽器直接呼叫 Gemini API，解決 GAS 中轉造成的 HTTP 403 問題
+### Added
+- 說明頁新增 Gemini API Key 輸入框，儲存於裝置本機（不經 GAS）
+
 ## [1.0.3] - 2026-05-04
 ### Fixed
 - 修復歷史記錄與 Dashboard 頭像亂碼問題（HTML onerror 屬性使用 `&quot;` 取代 `\"`）

@@ -4,6 +4,7 @@ const State = (() => {
   const defaults = {
     currentUser: null,
     gasUrl: '',
+    geminiKey: '',
     avatars: {},      // { pigpig: 'data:...' | null }
     dashboardData: null,
     transactionsCache: {},  // { 'YYYY-MM': [...] }

@@ -121,7 +121,7 @@ const History = (() => {
               <div class="txn-category">${t.category}</div>
               <div class="txn-meta">
                 ${Utils.avatarHtml(t.userId, 16)}
-                <span>${t.time || ''}</span>
+                <span>${Utils.formatTime(t.time)}</span>
                 ${t.merchant ? `<span>· ${Utils.truncate(t.merchant, 12)}</span>` : ''}
                 <span>${CONFIG.getPaymentEmoji(t.paymentMethod)}</span>
               </div>
