@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.0.3] - 2026-05-04
+### Fixed
+- 修復歷史記錄與 Dashboard 頭像亂碼問題（HTML onerror 屬性使用 `&quot;` 取代 `\"`）
+- 滾滾 emoji 由 🐹 改為 🧚‍♀️，豬豬保留 🐷
+### Added
+- 導覽列新增 📷 掃描收據按鈕（與 ＋ 手動記帳並排顯示）
+- 新增記帳預設記帳人為目前登入使用者
+
 ## [1.0.2] - 2026-05-04
 ### Fixed
 - 頭像圖片改用 background-image 方式載入，解決在 flex 容器內 height:100% 失效導致圖片無法填滿圓形的問題
