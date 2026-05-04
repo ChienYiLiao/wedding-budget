@@ -48,7 +48,13 @@
   align-items: center;
   gap: 6px;
   flex-shrink: 0;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast);
 }
+#topbar-user:hover  { background: var(--color-bg-elevated); }
+#topbar-user:active { background: var(--color-border); }
 #topbar-user .topbar-avatar {
   width: 32px; height: 32px;
   border-radius: 50%;
