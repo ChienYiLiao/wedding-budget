@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.0.2] - 2026-05-04
+### Fixed
+- 頭像圖片改用 background-image 方式載入，解決在 flex 容器內 height:100% 失效導致圖片無法填滿圓形的問題
+- utils.js avatarHtml 改用明確 px 尺寸，解決交易記錄列表頭像顯示異常
+- App 內新增切換使用者功能：點擊右上角頭像區塊即可回到使用者選擇頁
+
 ## [1.0.1] - 2026-05-04
 ### Added
 - 豬豬/滾滾預設頭像圖片（自訂 > 預設圖片 > emoji 三層 fallback）

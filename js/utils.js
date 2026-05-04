@@ -91,12 +91,12 @@ const Utils = {
     return `${y} 年 ${parseInt(m)} 月`;
   },
 
-  // 人員頭像 HTML
+  // 人員頭像 HTML（明確像素尺寸，避免 flexbox height:100% 問題）
   avatarHtml(userId, size = 24) {
     const user = CONFIG.getUserById(userId);
     const src = State.getAvatar(userId) || user.defaultAvatar;
-    const style = `width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;background:var(--color-border);flex-shrink:0;`;
-    const fallback = `this.style.display='none';this.insertAdjacentHTML('afterend','<span style=\\"${style}display:inline-flex;align-items:center;justify-content:center;font-size:${Math.round(size*0.6)}px;\\">${user.emoji}</span>')`;
+    const style = `width:${size}px;height:${size}px;display:block;border-radius:50%;object-fit:cover;flex-shrink:0;`;
+    const fallback = `this.outerHTML='<span style=\\"width:${size}px;height:${size}px;display:inline-flex;align-items:center;justify-content:center;font-size:${Math.round(size*0.6)}px;border-radius:50%;background:var(--color-border);flex-shrink:0;\\">${user.emoji}</span>'`;
     return `<img src="${src}" style="${style}" alt="${user.name}" onerror="${fallback}">`;
   },
 
