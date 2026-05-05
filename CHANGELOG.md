@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.0.6] - 2026-05-05
+### Fixed
+- Stats.gs 新增 `_getYM()` 處理 Google Sheets 將日期欄位自動轉為 Date 物件的問題，修復「近 12 月」只顯示當月資料的 bug
+### Added
+- 統計頁新增「自訂」模式：可手動選擇起訖月份（yyyy-MM）後點查詢，自由查看任意區間
+
 ## [1.0.5] - 2026-05-05
 ### Added
 - 統計頁新增範圍選擇器：當月 / 近 3 月 / 近 6 月 / 近 12 月

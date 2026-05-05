@@ -1,5 +1,15 @@
 // ===== 統計分析（支援單月與日期範圍）=====
 
+function _getYM(dateVal) {
+  if (!dateVal) return '';
+  if (dateVal instanceof Date) {
+    return Utilities.formatDate(dateVal, Session.getScriptTimeZone(), 'yyyy-MM');
+  }
+  const s = String(dateVal);
+  const m = s.match(/^(\d{4})[-\/](\d{2})/);
+  return m ? m[1] + '-' + m[2] : '';
+}
+
 function getStats(params) {
   const sheet = getTxnSheet();
   const all = readAllRows(sheet);
@@ -17,7 +27,7 @@ function getStats(params) {
   const months = _getMonthRange(startYM, endYM);
 
   // 範圍內交易
-  const inRange = all.filter(t => months.includes(String(t.date || '').slice(0, 7)));
+  const inRange = all.filter(t => months.includes(_getYM(t.date)));
 
   let totalExpense = 0, totalIncome = 0;
   const catMap = {}, payMap = {}, userMap = {};
@@ -66,7 +76,7 @@ function _getMonthRange(startYM, endYM) {
 
 function _buildTrend(all, months) {
   return months.map(ym => {
-    const rows = all.filter(t => String(t.date || '').startsWith(ym));
+    const rows = all.filter(t => _getYM(t.date) === ym);
     let expense = 0, income = 0;
     rows.forEach(t => {
       const amt = Number(t.amount) || 0;

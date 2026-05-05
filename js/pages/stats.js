@@ -1,9 +1,11 @@
 const Stats = (() => {
-  let _yearMonth = Utils.currentYearMonth(); // 當月模式下的月份
-  let _months    = 1;  // 1 / 3 / 6 / 12
-  let _trendChart = null;
-  let _pieChart   = null;
-  let _payChart   = null;
+  let _yearMonth   = Utils.currentYearMonth(); // 當月模式下的月份
+  let _months      = 1;   // 1 / 3 / 6 / 12 / 0(自訂)
+  let _customStart = '';  // 自訂起始 yyyy-MM
+  let _customEnd   = '';  // 自訂結束 yyyy-MM
+  let _trendChart  = null;
+  let _pieChart    = null;
+  let _payChart    = null;
 
   function show() {
     _render();
@@ -17,6 +19,12 @@ const Stats = (() => {
   }
 
   function _getRange() {
+    if (_months === 0) {
+      // 自訂模式
+      const s = _customStart || Utils.addMonths(Utils.currentYearMonth(), -11);
+      const e = _customEnd   || Utils.currentYearMonth();
+      return { startYM: s <= e ? s : e, endYM: s <= e ? e : s };
+    }
     if (_months === 1) return { startYM: _yearMonth, endYM: _yearMonth };
     const endYM   = Utils.currentYearMonth();
     const startYM = Utils.addMonths(endYM, -(_months - 1));
@@ -31,6 +39,7 @@ const Stats = (() => {
         <button class="mode-btn" data-m="3">近 3 月</button>
         <button class="mode-btn" data-m="6">近 6 月</button>
         <button class="mode-btn" data-m="12">近 12 月</button>
+        <button class="mode-btn" data-m="0">自訂</button>
       </div>
 
       <div id="stats-month-nav" style="display:flex;justify-content:center;margin-bottom:var(--space-md)">
@@ -41,6 +50,15 @@ const Stats = (() => {
         </div>
       </div>
       <div id="stats-range-label" style="display:none;text-align:center;font-size:var(--font-size-sm);color:var(--color-text-muted);margin-bottom:var(--space-md)"></div>
+
+      <div id="stats-custom-panel" style="display:none;background:var(--color-bg-card);border-radius:12px;padding:var(--space-md);margin-bottom:var(--space-md)">
+        <div style="display:flex;align-items:center;gap:var(--space-sm);flex-wrap:wrap;justify-content:center">
+          <input type="month" id="stats-custom-start" style="padding:6px 10px;border-radius:8px;border:1px solid var(--color-border);background:var(--color-bg-input);color:var(--color-text);font-size:var(--font-size-sm)">
+          <span style="color:var(--color-text-muted)">～</span>
+          <input type="month" id="stats-custom-end" style="padding:6px 10px;border-radius:8px;border:1px solid var(--color-border);background:var(--color-bg-input);color:var(--color-text);font-size:var(--font-size-sm)">
+          <button id="stats-custom-query" style="padding:6px 16px;border-radius:8px;background:var(--color-primary);color:#fff;border:none;font-size:var(--font-size-sm);cursor:pointer">查詢</button>
+        </div>
+      </div>
 
       <div class="stats-row" id="stats-summary"></div>
       <div class="card" style="margin-bottom:var(--space-md)">
@@ -73,10 +91,9 @@ const Stats = (() => {
         _months = parseInt(btn.dataset.m);
         page.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        document.getElementById('stats-month-nav').style.display   = _months === 1 ? 'flex'  : 'none';
-        document.getElementById('stats-range-label').style.display = _months > 1   ? 'block' : 'none';
+        _updateVisibility();
         _updateLabel();
-        _loadData();
+        if (_months !== 0) _loadData();
       });
     });
 
@@ -92,11 +109,37 @@ const Stats = (() => {
       _loadData();
     });
 
+    // 自訂查詢按鈕
+    document.getElementById('stats-custom-query').addEventListener('click', () => {
+      const s = document.getElementById('stats-custom-start').value;
+      const e = document.getElementById('stats-custom-end').value;
+      if (!s || !e) { Toast.error('請選擇起訖月份'); return; }
+      _customStart = s;
+      _customEnd   = e;
+      _updateLabel();
+      _loadData();
+    });
+
     // 初始化 active 按鈕
     const activeBtn = page.querySelector(`.mode-btn[data-m="${_months}"]`);
     if (activeBtn) activeBtn.classList.add('active');
 
+    // 初始化自訂欄位預設值
+    const now = Utils.currentYearMonth();
+    document.getElementById('stats-custom-start').value = _customStart || Utils.addMonths(now, -11);
+    document.getElementById('stats-custom-end').value   = _customEnd   || now;
+
+    _updateVisibility();
     _updateLabel();
+  }
+
+  function _updateVisibility() {
+    const isMonth  = _months === 1;
+    const isCustom = _months === 0;
+    const isRange  = !isMonth && !isCustom;
+    document.getElementById('stats-month-nav').style.display    = isMonth  ? 'flex'  : 'none';
+    document.getElementById('stats-range-label').style.display  = isRange  ? 'block' : 'none';
+    document.getElementById('stats-custom-panel').style.display = isCustom ? 'block' : 'none';
   }
 
   function _updateLabel() {
@@ -104,6 +147,8 @@ const Stats = (() => {
     const rangeEl = document.getElementById('stats-range-label');
     if (_months === 1) {
       if (monthEl) monthEl.textContent = Utils.formatYearMonth(_yearMonth);
+    } else if (_months === 0) {
+      // 自訂模式不需要 range label（自訂 panel 本身就是 label）
     } else {
       const { startYM, endYM } = _getRange();
       if (rangeEl) rangeEl.textContent =
@@ -137,8 +182,8 @@ const Stats = (() => {
   function _renderSummary(data) {
     const el = document.getElementById('stats-summary');
     if (!el) return;
-    const expLabel = _months > 1 ? '區間支出' : '本月支出';
-    const incLabel = _months > 1 ? '區間收入' : '本月收入';
+    const expLabel = _months !== 1 ? '區間支出' : '本月支出';
+    const incLabel = _months !== 1 ? '區間收入' : '本月收入';
     el.innerHTML = `
       <div class="stat-card">
         <div class="stat-label">${expLabel}</div>

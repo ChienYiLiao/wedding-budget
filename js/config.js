@@ -1,5 +1,5 @@
 const CONFIG = {
-  VERSION: '1.0.5',
+  VERSION: '1.0.6',
   APP_NAME: '婚禮記帳',
 
   // GAS Web App URL — 部署後填入，或使用者在首次進入時輸入
