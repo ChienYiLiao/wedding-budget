@@ -1,7 +1,9 @@
 const Stats = (() => {
-  let _yearMonth = Utils.currentYearMonth();
+  let _yearMonth = Utils.currentYearMonth(); // 當月模式下的月份
+  let _months    = 1;  // 1 / 3 / 6 / 12
   let _trendChart = null;
   let _pieChart   = null;
+  let _payChart   = null;
 
   function show() {
     _render();
@@ -11,18 +13,35 @@ const Stats = (() => {
   function hide() {
     if (_trendChart) { _trendChart.destroy(); _trendChart = null; }
     if (_pieChart)   { _pieChart.destroy();   _pieChart   = null; }
+    if (_payChart)   { _payChart.destroy();   _payChart   = null; }
+  }
+
+  function _getRange() {
+    if (_months === 1) return { startYM: _yearMonth, endYM: _yearMonth };
+    const endYM   = Utils.currentYearMonth();
+    const startYM = Utils.addMonths(endYM, -(_months - 1));
+    return { startYM, endYM };
   }
 
   function _render() {
     const page = document.getElementById('page-stats');
     page.innerHTML = `
-      <div style="display:flex;justify-content:center;margin-bottom:var(--space-lg)">
+      <div class="stats-mode-row">
+        <button class="mode-btn" data-m="1">當月</button>
+        <button class="mode-btn" data-m="3">近 3 月</button>
+        <button class="mode-btn" data-m="6">近 6 月</button>
+        <button class="mode-btn" data-m="12">近 12 月</button>
+      </div>
+
+      <div id="stats-month-nav" style="display:flex;justify-content:center;margin-bottom:var(--space-md)">
         <div class="month-picker">
           <button class="month-nav" id="stats-prev">‹</button>
           <span class="month-label" id="stats-month-label"></span>
           <button class="month-nav" id="stats-next">›</button>
         </div>
       </div>
+      <div id="stats-range-label" style="display:none;text-align:center;font-size:var(--font-size-sm);color:var(--color-text-muted);margin-bottom:var(--space-md)"></div>
+
       <div class="stats-row" id="stats-summary"></div>
       <div class="card" style="margin-bottom:var(--space-md)">
         <div class="card-header"><span class="card-title">逐月趨勢</span></div>
@@ -48,30 +67,57 @@ const Stats = (() => {
         </div>
       </div>`;
 
+    // 模式切換
+    page.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        _months = parseInt(btn.dataset.m);
+        page.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('stats-month-nav').style.display   = _months === 1 ? 'flex'  : 'none';
+        document.getElementById('stats-range-label').style.display = _months > 1   ? 'block' : 'none';
+        _updateLabel();
+        _loadData();
+      });
+    });
+
+    // 月份導覽（當月模式）
     document.getElementById('stats-prev').addEventListener('click', () => {
       _yearMonth = Utils.addMonths(_yearMonth, -1);
+      _updateLabel();
       _loadData();
     });
     document.getElementById('stats-next').addEventListener('click', () => {
       _yearMonth = Utils.addMonths(_yearMonth, 1);
+      _updateLabel();
       _loadData();
     });
+
+    // 初始化 active 按鈕
+    const activeBtn = page.querySelector(`.mode-btn[data-m="${_months}"]`);
+    if (activeBtn) activeBtn.classList.add('active');
+
     _updateLabel();
   }
 
   function _updateLabel() {
-    const el = document.getElementById('stats-month-label');
-    if (el) el.textContent = Utils.formatYearMonth(_yearMonth);
+    const monthEl = document.getElementById('stats-month-label');
+    const rangeEl = document.getElementById('stats-range-label');
+    if (_months === 1) {
+      if (monthEl) monthEl.textContent = Utils.formatYearMonth(_yearMonth);
+    } else {
+      const { startYM, endYM } = _getRange();
+      if (rangeEl) rangeEl.textContent =
+        `${Utils.formatYearMonth(startYM)} ～ ${Utils.formatYearMonth(endYM)}`;
+    }
   }
 
   async function _loadData() {
-    _updateLabel();
     const gasUrl = State.get('gasUrl');
     if (!gasUrl) return;
-
+    const { startYM, endYM } = _getRange();
     try {
       Loader.show();
-      const res = await API.getStats(_yearMonth);
+      const res = await API.getStats(startYM, endYM);
       _renderAll(res);
     } catch (e) {
       Toast.error('載入失敗：' + e.message);
@@ -91,13 +137,15 @@ const Stats = (() => {
   function _renderSummary(data) {
     const el = document.getElementById('stats-summary');
     if (!el) return;
+    const expLabel = _months > 1 ? '區間支出' : '本月支出';
+    const incLabel = _months > 1 ? '區間收入' : '本月收入';
     el.innerHTML = `
       <div class="stat-card">
-        <div class="stat-label">本月支出</div>
+        <div class="stat-label">${expLabel}</div>
         <div class="stat-value expense">${Utils.formatMoney(data.monthExpense || 0)}</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">本月收入</div>
+        <div class="stat-label">${incLabel}</div>
         <div class="stat-value income">${Utils.formatMoney(data.monthIncome || 0)}</div>
       </div>
       <div class="stat-card">
@@ -144,7 +192,8 @@ const Stats = (() => {
     if (_pieChart) { _pieChart.destroy(); _pieChart = null; }
 
     if (!breakdown.length) {
-      canvas.parentElement.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-title">本月尚無支出</div></div>';
+      canvas.parentElement.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-title">本期尚無支出</div></div>';
+      if (legendEl) legendEl.innerHTML = '';
       return;
     }
 
@@ -180,8 +229,10 @@ const Stats = (() => {
   function _renderUserBreakdown(users) {
     const el = document.getElementById('stats-user-breakdown');
     if (!el) return;
-    if (!users.length) { el.innerHTML = '<div class="empty-state" style="padding:var(--space-lg)"><div class="empty-icon">👥</div><div class="empty-title">無資料</div></div>'; return; }
-
+    if (!users.length) {
+      el.innerHTML = '<div class="empty-state" style="padding:var(--space-lg)"><div class="empty-icon">👥</div><div class="empty-title">無資料</div></div>';
+      return;
+    }
     el.innerHTML = users.map(u => {
       const user = CONFIG.getUserById(u.userId);
       return `
@@ -201,9 +252,11 @@ const Stats = (() => {
 
   function _renderPayChart(breakdown) {
     const canvas = document.getElementById('stats-pay-chart');
-    if (!canvas || !breakdown.length) return;
+    if (!canvas) return;
+    if (_payChart) { _payChart.destroy(); _payChart = null; }
+    if (!breakdown.length) return;
 
-    new Chart(canvas, {
+    _payChart = new Chart(canvas, {
       type: 'bar',
       data: {
         labels: breakdown.map(b => CONFIG.getPaymentLabel(b.method)),

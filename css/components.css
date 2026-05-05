@@ -792,6 +792,31 @@ img { display: block; max-width: 100%; }
   font-weight: var(--font-weight-semi);
 }
 
+/* ===== Stats Mode Picker ===== */
+.stats-mode-row {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: var(--space-md);
+  flex-wrap: wrap;
+}
+.mode-btn {
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+  background: var(--color-bg-elevated);
+  border: 1.5px solid var(--color-border);
+  transition: all var(--transition-fast);
+}
+.mode-btn.active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+  box-shadow: 0 2px 8px rgba(201,149,106,0.3);
+}
+
 /* ===== Receipt Preview ===== */
 .receipt-preview {
   width: 100%;
