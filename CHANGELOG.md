@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.0.5] - 2026-05-05
+### Added
+- 統計頁新增範圍選擇器：當月 / 近 3 月 / 近 6 月 / 近 12 月
+- 多月範圍模式下所有圖表（趨勢、類別、人員、支付）自動聚合跨月資料
+- 多月模式顯示「區間支出 / 區間收入」，單月維持「本月」標籤
+### Changed
+- GAS Stats.gs 改為支援 startYM + endYM 範圍查詢（相容舊版單月呼叫）
+
 ## [1.0.4] - 2026-05-04
 ### Fixed
 - 歷史記錄時間欄位顯示 "1899-12-30" 問題：新增 formatTime() 過濾 Sheets 回傳的日期基準值，只顯示 HH:MM

@@ -21,7 +21,11 @@ function doGet(e) {
       case 'getTransactions':
         return _jsonRes(getTransactions(e.parameter.yearMonth || ''));
       case 'getStats':
-        return _jsonRes(getStats(e.parameter.yearMonth || _currentYearMonth()));
+        return _jsonRes(getStats({
+          yearMonth: e.parameter.yearMonth || _currentYearMonth(),
+          startYM:   e.parameter.startYM   || '',
+          endYM:     e.parameter.endYM     || '',
+        }));
       case 'getSettings':
         return _jsonRes(getSettings());
       default:

@@ -62,8 +62,11 @@ const API = (() => {
     return result;
   }
 
-  async function getStats(yearMonth) {
-    return get('getStats', { yearMonth });
+  async function getStats(startYM, endYM) {
+    const params = (startYM === endYM)
+      ? { yearMonth: startYM }
+      : { startYM, endYM };
+    return get('getStats', params);
   }
 
   async function getSettings() {
