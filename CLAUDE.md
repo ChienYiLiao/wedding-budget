@@ -93,6 +93,8 @@ wedding-budget/
 │   ├── Stats.gs                  # 統計分析（跨月範圍查詢）
 │   ├── Receipt.gs                # AI 收據辨識（Gemini）
 │   └── setup-guide.md            # GAS 部署說明（給人看的）
+├── planner/
+│   └── index.html                # 婚禮規劃頁（部署至 GitHub Pages，老婆可存取）
 ├── assets/
 │   └── default-avatars/
 │       ├── pigpig.png            # 豬豬預設頭像
@@ -187,6 +189,7 @@ Excel 婚禮規劃表，共 5 個工作表：
 - 甘特圖用相對婚期偏移（0 = 婚禮月，-7 = 婚禮前 7 個月）
 - 色系：深紫 `#4A1942`、粉紅 `#C9506E`、藍 `#3A6EA5`、紫 `#6A4C93`
 - 可借用此頁的台灣婚禮費用項目清單與台灣習俗說明文字
+- **已複製至 `planner/index.html` 並部署至 GitHub Pages**（老婆可直接存取）
 
 ### `wedding_checklist.xlsx`（舊版）
 已被 v2 取代，由 `.gitignore` 排除，不進版本控制。
@@ -232,3 +235,4 @@ Excel 婚禮規劃表，共 5 個工作表：
 | 2026/05/05 | v1.0.5–1.0.6 統計頁新增跨月範圍查詢 |
 | 2026/05/26 | CLAUDE.md 全面更新，整合真實專案架構 |
 | 2026/05/26 | CLAUDE.md 更新 Preparation item 詳細內容（直接讀取 xlsx） |
+| 2026/05/26 | 新增 planner/ 資料夾，婚禮規劃頁部署至 GitHub Pages |
