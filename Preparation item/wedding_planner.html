@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>廖千儀 ♥ 陳郁諠 婚禮籌備計畫</title>
+<style>
+:root{
+  --pink:#C9506E;--pink-l:#FFD6E0;--pink-p:#FFF0F5;
+  --blue:#3A6EA5;--blue-l:#D6E8FF;--blue-p:#EEF6FF;
+  --purple:#6A4C93;--purple-l:#E8D6FF;
+  --dark:#4A1942;--green:#28a745;--green-l:#D4EDDA;
+  --red:#dc3545;--red-l:#FFCDD2;
+  --yellow:#FFF9C4;--orange:#FF9800;--orange-l:#FFE0B2;
+  --gray:#6c757d;--white:#fff;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:linear-gradient(135deg,#fce4ec 0%,#f3e5f5 50%,#e8eaf6 100%);min-height:100vh;color:#333;}
+
+/* Hero */
+.hero{background:linear-gradient(135deg,var(--dark) 0%,#6A4C93 60%,var(--pink) 100%);color:#fff;text-align:center;padding:2rem 1rem 1.5rem;position:relative;overflow:hidden;}
+.hero::before{content:"✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿";position:absolute;top:6px;left:0;right:0;font-size:13px;opacity:.25;letter-spacing:4px;}
+.hero h1{font-size:1.9rem;font-weight:700;margin-bottom:.4rem;}
+.hero p{font-size:.9rem;opacity:.85;}
+
+/* Settings bar */
+.settings-bar{background:#fff;border-bottom:3px solid var(--pink);padding:.8rem 1.2rem;display:flex;gap:1.2rem;align-items:center;flex-wrap:wrap;box-shadow:0 2px 8px rgba(0,0,0,.1);}
+.settings-bar label{font-weight:700;font-size:.9rem;color:var(--dark);}
+.settings-bar input[type=date]{padding:.35rem .6rem;border:2px solid var(--pink);border-radius:8px;font-size:.9rem;cursor:pointer;font-family:inherit;}
+.today-badge{background:var(--blue-p);color:var(--blue);padding:.3rem .8rem;border-radius:20px;font-size:.85rem;font-weight:600;border:1px solid var(--blue-l);}
+.stat-badge{padding:.3rem .8rem;border-radius:20px;font-size:.85rem;font-weight:700;cursor:pointer;}
+.stat-overdue{background:var(--red-l);color:var(--red);border:1px solid #ef9a9a;}
+.stat-soon{background:var(--orange-l);color:var(--orange);border:1px solid #ffcc80;}
+.stat-ok{background:var(--green-l);color:var(--green);border:1px solid #a5d6a7;}
+.days-to-wedding{background:var(--purple-l);color:var(--purple);border:1px solid #ce93d8;padding:.3rem .8rem;border-radius:20px;font-size:.85rem;font-weight:700;}
+
+/* Progress */
+.progress-section{background:#fff;margin:.8rem;border-radius:12px;padding:1rem 1.4rem;box-shadow:0 2px 10px rgba(0,0,0,.09);}
+.progress-label{display:flex;justify-content:space-between;margin-bottom:.4rem;font-weight:600;color:var(--dark);font-size:.9rem;}
+.progress-bar{height:20px;background:#f0f0f0;border-radius:10px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--purple),var(--pink));transition:width .5s;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.78rem;font-weight:700;min-width:30px;}
+
+/* Tabs */
+.tabs{display:flex;gap:.4rem;padding:0 .8rem;flex-wrap:wrap;}
+.tab-btn{padding:.55rem 1.1rem;border:none;border-radius:8px 8px 0 0;cursor:pointer;font-size:.88rem;font-weight:600;background:rgba(255,255,255,.6);color:var(--dark);transition:all .2s;}
+.tab-btn.active{background:#fff;box-shadow:0 -2px 8px rgba(0,0,0,.08);}
+.tab-btn:hover:not(.active){background:rgba(255,255,255,.85);}
+
+/* Tab content */
+.tab-content{display:none;padding:0 .8rem 2rem;}
+.tab-content.active{display:block;}
+
+/* ── GANTT ── */
+.gantt-wrap{background:#fff;border-radius:0 12px 12px 12px;padding:1.1rem;overflow-x:auto;box-shadow:0 2px 12px rgba(0,0,0,.1);}
+.gantt-info{background:var(--yellow);border-left:4px solid #f9a825;padding:.6rem 1rem;border-radius:4px;margin-bottom:.9rem;font-size:.85rem;color:#5d4037;}
+.legend{display:flex;gap:.9rem;flex-wrap:wrap;font-size:.82rem;align-items:center;margin-bottom:.9rem;}
+.legend-item{display:flex;align-items:center;gap:.3rem;}
+.leg-dot{width:16px;height:16px;border-radius:3px;}
+table.gantt{border-collapse:collapse;width:100%;min-width:880px;font-size:.8rem;}
+table.gantt th{background:var(--dark);color:#fff;padding:.45rem .35rem;text-align:center;white-space:nowrap;font-weight:700;font-size:.78rem;}
+table.gantt td{border:1px solid #e0e0e0;padding:.3rem .3rem;vertical-align:middle;}
+table.gantt tr:hover td{filter:brightness(.96);}
+.g-cat{font-weight:700;font-size:.76rem;text-align:center;}
+.g-task{font-size:.82rem;}
+.g-own{text-align:center;font-weight:700;font-size:.76rem;color:#fff;border-radius:4px;padding:.1rem .25rem;white-space:nowrap;}
+.o-m{background:var(--blue);}
+.o-f{background:var(--pink);}
+.o-b{background:var(--purple);}
+.g-bar{text-align:center;font-size:.85rem;transition:background .3s;}
+/* bar colors */
+.bar-m{background:#bcd4f0;}
+.bar-f{background:#f5b8cc;}
+.bar-b{background:#c9b8e8;}
+.bar-done{background:#aedca0;}
+.bar-wed{background:var(--pink);color:#fff;font-weight:700;}
+/* column state overrides (applied via JS class) */
+.col-today{background:#FFF9C4 !important;outline:2px solid #f9a825;outline-offset:-2px;}
+.col-wed{background:#FFCDD2 !important;outline:2px solid var(--pink);outline-offset:-2px;}
+.col-past{opacity:.55;}
+.th-today{background:#f9a825 !important;position:relative;}
+.th-wed{background:var(--pink) !important;}
+.th-past{background:#888 !important;}
+
+/* ── CHECKLIST ── */
+.cl-wrap{background:#fff;border-radius:0 12px 12px 12px;box-shadow:0 2px 12px rgba(0,0,0,.1);overflow:hidden;}
+.cl-toolbar{padding:.8rem 1.1rem;background:#fafafa;border-bottom:1px solid #eee;display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;}
+.cl-toolbar input{padding:.4rem .8rem;border:1px solid #ddd;border-radius:8px;font-size:.88rem;width:200px;}
+.filter-wrap{display:flex;gap:.4rem;flex-wrap:wrap;}
+.fbtn{padding:.3rem .7rem;border:2px solid #ddd;border-radius:16px;cursor:pointer;font-size:.8rem;background:#fff;font-weight:600;transition:all .2s;}
+.fbtn.a-all{border-color:var(--dark);background:var(--dark);color:#fff;}
+.fbtn.a-m{border-color:var(--blue);background:var(--blue);color:#fff;}
+.fbtn.a-f{border-color:var(--pink);background:var(--pink);color:#fff;}
+.fbtn.a-b{border-color:var(--purple);background:var(--purple);color:#fff;}
+.fbtn.a-over{border-color:var(--red);background:var(--red);color:#fff;}
+.fbtn.a-soon{border-color:var(--orange);background:var(--orange);color:#fff;}
+.fbtn:hover:not([class*='a-']){background:#f0f0f0;}
+.cl-sec-hdr{padding:.55rem 1.1rem;font-weight:700;font-size:.88rem;color:#fff;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;}
+.cl-sec-hdr:hover{filter:brightness(.93);}
+.cl-item{display:flex;align-items:flex-start;gap:.75rem;padding:.7rem 1.1rem;border-bottom:1px solid #f0f0f0;transition:background .12s;}
+.cl-item:hover{background:#fafafa;}
+.cl-item.is-done{opacity:.5;}
+.cl-item.is-done .cl-task{text-decoration:line-through;color:var(--gray);}
+.cl-item.is-overdue{background:#fff5f5;}
+.cl-item.is-soon{background:#fffde7;}
+.cl-chk{flex-shrink:0;width:22px;height:22px;border:2px solid #ccc;border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;margin-top:2px;background:#fff;}
+.cl-chk.checked{background:var(--green);border-color:var(--green);}
+.cl-chk.checked::after{content:"✓";color:#fff;font-size:14px;font-weight:700;}
+.cl-body{flex:1;}
+.cl-task{font-size:.88rem;font-weight:500;margin-bottom:.2rem;line-height:1.4;}
+.cl-meta{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;font-size:.76rem;}
+.badge{padding:.08rem .45rem;border-radius:10px;font-weight:600;}
+.badge-m{background:var(--blue-l);color:var(--blue);}
+.badge-f{background:var(--pink-l);color:var(--pink);}
+.badge-b{background:var(--purple-l);color:var(--purple);}
+.status-badge{padding:.08rem .5rem;border-radius:10px;font-weight:700;font-size:.75rem;}
+.st-over{background:var(--red-l);color:var(--red);}
+.st-soon{background:var(--orange-l);color:var(--orange);}
+.st-ok{background:var(--green-l);color:var(--green);}
+.st-done{background:#e8e8e8;color:#666;}
+.st-none{display:none;}
+.dl-text{color:var(--gray);}
+.dl-text.dl-over{color:var(--red);font-weight:600;}
+.dl-text.dl-soon{color:var(--orange);font-weight:600;}
+.budget-tag{font-size:.74rem;color:#888;background:#f5f5f5;padding:.08rem .4rem;border-radius:4px;}
+.cl-note{font-size:.78rem;color:#666;margin-top:.25rem;line-height:1.4;font-style:italic;}
+.cl-item.hidden{display:none;}
+
+/* ── TIMELINE ── */
+.tl-wrap{background:#fff;border-radius:0 12px 12px 12px;padding:1.2rem;box-shadow:0 2px 12px rgba(0,0,0,.1);}
+.timeline{position:relative;padding-left:2rem;}
+.timeline::before{content:"";position:absolute;left:.72rem;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--purple),var(--pink));}
+.tl-item{position:relative;margin-bottom:1.4rem;}
+.tl-dot{position:absolute;left:-1.5rem;top:.3rem;width:13px;height:13px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px var(--purple);background:var(--purple);}
+.tl-dot.d-done{background:var(--green);box-shadow:0 0 0 2px var(--green);}
+.tl-dot.d-current{background:var(--orange);box-shadow:0 0 0 2px var(--orange);width:16px;height:16px;left:-1.65rem;}
+.tl-dot.d-wed{background:var(--pink);box-shadow:0 0 0 2px var(--pink);width:16px;height:16px;left:-1.65rem;}
+.tl-month{font-weight:700;font-size:.83rem;display:inline-flex;align-items:center;gap:.4rem;padding:.2rem .7rem;border-radius:10px;margin-bottom:.4rem;}
+.tl-tasks{list-style:none;}
+.tl-tasks li{font-size:.86rem;padding:.28rem 0;border-bottom:1px dashed #eee;display:flex;gap:.4rem;align-items:flex-start;line-height:1.4;}
+.tl-tasks li:last-child{border-bottom:none;}
+.tl-tag{flex-shrink:0;font-size:.7rem;font-weight:700;padding:.04rem .35rem;border-radius:7px;margin-top:2px;}
+
+/* ── SPECIFIC ── */
+.spec-hdr{color:#fff;padding:.75rem 1.1rem;font-weight:700;font-size:.95rem;}
+
+@media(max-width:600px){
+  .hero h1{font-size:1.4rem;}
+  .tab-btn{padding:.45rem .7rem;font-size:.8rem;}
+  .settings-bar{gap:.7rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>💍 廖千儀 ♥ 陳郁諠</h1>
+  <p>結婚籌備計畫｜台灣習俗（簡化版，僅結婚宴）</p>
+</div>
+
+<div class="settings-bar">
+  <label for="wedding-input">💒 婚禮日期：</label>
+  <input type="date" id="wedding-input" value="2026-12-06">
+  <span class="today-badge" id="today-display"></span>
+  <span class="days-to-wedding" id="days-countdown"></span>
+  <span class="stat-badge stat-overdue" id="badge-over" style="cursor:pointer" onclick="setFilter('over')">⚠️ 逾期 <span id="cnt-over">0</span> 項</span>
+  <span class="stat-badge stat-soon" id="badge-soon" style="cursor:pointer" onclick="setFilter('soon')">🕐 即將到期 <span id="cnt-soon">0</span> 項</span>
+  <span class="stat-badge stat-ok" id="badge-ok">✅ 正常 <span id="cnt-ok">0</span> 項</span>
+</div>
+
+<div class="progress-section">
+  <div class="progress-label">
+    <span>整體進度</span>
+    <span id="prog-text">0 / 0 完成</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%">0%</div></div>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('checklist',this)">✅ 完整 Checklist</button>
+  <button class="tab-btn" onclick="switchTab('gantt',this)">📅 甘特圖</button>
+  <button class="tab-btn" onclick="switchTab('timeline',this)">🗓️ 時間軸</button>
+  <button class="tab-btn" onclick="switchTab('male',this)">💙 男方清單</button>
+  <button class="tab-btn" onclick="switchTab('female',this)">🌸 女方清單</button>
+</div>
+
+<!-- ── CHECKLIST ── -->
+<div id="tab-checklist" class="tab-content active">
+<div class="cl-wrap">
+  <div class="cl-toolbar">
+    <input type="text" id="search-q" placeholder="🔍 搜尋..." oninput="applyFilters()">
+    <div class="filter-wrap">
+      <button class="fbtn a-all" id="f-all" onclick="setFilter('all')">全部</button>
+      <button class="fbtn" id="f-m" onclick="setFilter('m')">💙 男方</button>
+      <button class="fbtn" id="f-f" onclick="setFilter('f')">🌸 女方</button>
+      <button class="fbtn" id="f-b" onclick="setFilter('b')">💜 雙方</button>
+      <button class="fbtn" id="f-over" onclick="setFilter('over')">🔴 逾期</button>
+      <button class="fbtn" id="f-soon" onclick="setFilter('soon')">🟡 即將</button>
+    </div>
+    <label style="font-size:.82rem"><input type="checkbox" id="hide-done" onchange="applyFilters()"> 隱藏完成</label>
+  </div>
+  <div id="cl-body"></div>
+</div>
+</div>
+
+<!-- ── GANTT ── -->
+<div id="tab-gantt" class="tab-content">
+<div class="gantt-wrap">
+  <div class="gantt-info" id="gantt-info"></div>
+  <div class="legend">
+    <strong>圖例：</strong>
+    <span class="legend-item"><span class="leg-dot" style="background:#bcd4f0"></span>男方</span>
+    <span class="legend-item"><span class="leg-dot" style="background:#f5b8cc"></span>女方</span>
+    <span class="legend-item"><span class="leg-dot" style="background:#c9b8e8"></span>雙方共同</span>
+    <span class="legend-item"><span class="leg-dot" style="background:#aedca0"></span>已完成</span>
+    <span class="legend-item"><span class="leg-dot" style="background:var(--pink)"></span>婚禮當天</span>
+    <span class="legend-item"><span class="leg-dot" style="background:#FFF9C4;border:2px solid #f9a825"></span>今日</span>
+    <span class="legend-item"><span class="leg-dot" style="background:#FFCDD2;border:2px solid var(--pink)"></span>婚禮月</span>
+  </div>
+  <div style="overflow-x:auto"><table class="gantt" id="g-table"><thead id="g-head"></thead><tbody id="g-body"></tbody></table></div>
+</div>
+</div>
+
+<!-- ── TIMELINE ── -->
+<div id="tab-timeline" class="tab-content">
+<div class="tl-wrap">
+  <div class="timeline" id="tl-body"></div>
+</div>
+</div>
+
+<!-- ── MALE ── -->
+<div id="tab-male" class="tab-content">
+<div class="cl-wrap">
+  <div class="spec-hdr" style="background:var(--blue)">💙 廖千儀（男方）專屬清單 <span style="font-size:.82rem;font-weight:400;opacity:.85">— 雙方共同事項請至「完整 Checklist」查看</span></div>
+  <div id="male-body"></div>
+</div>
+</div>
+
+<!-- ── FEMALE ── -->
+<div id="tab-female" class="tab-content">
+<div class="cl-wrap">
+  <div class="spec-hdr" style="background:var(--pink)">🌸 陳郁諠（女方）專屬清單 <span style="font-size:.82rem;font-weight:400;opacity:.85">— 雙方共同事項請至「完整 Checklist」查看</span></div>
+  <div id="female-body"></div>
+</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════
+// owner: 'm'=男方, 'f'=女方, 'b'=雙方
+// deadlineOffset: null=固定日期, 數字=相對婚禮天數(負=前,正=後)
+// fixedDate: 'YYYY-MM-DD' for fixed, null for relative
+// done: true if already completed
+
+const CL = [
+  {cat:"確認規劃",task:"求婚完成 ✓",owner:"b",fixedDate:"2026-04-17",deadlineOffset:null,note:"廖千儀已於04/17完成求婚！",budget:"",done:true},
+  {cat:"確認規劃",task:"雙方家長見面面談",owner:"b",fixedDate:"2026-05-30",deadlineOffset:null,note:"確認雙方對婚禮的期望與形式",budget:""},
+  {cat:"確認規劃",task:"確定婚禮日期（查農民曆/擇日師）",owner:"b",fixedDate:"2026-06-30",deadlineOffset:null,note:"台灣重視吉日，可請擇日師選擇良辰吉日",budget:"擇日師約NT$2,000-5,000"},
+  {cat:"確認規劃",task:"確認婚禮總預算與分攤方式",owner:"b",fixedDate:"2026-06-30",deadlineOffset:null,note:"台灣傳統男方負擔婚宴較多，現代多依雙方協議彈性分攤",budget:""},
+  {cat:"確認規劃",task:"確認賓客名單初稿（男女方各自統計）",owner:"b",fixedDate:"2026-06-30",deadlineOffset:null,note:"依場地容量決定桌數，台灣喜宴通常10人/桌",budget:""},
+  {cat:"確認規劃",task:"確定婚宴形式（飯店/餐廳/流水席）",owner:"b",fixedDate:"2026-06-30",deadlineOffset:null,note:"飯店較正式，餐廳較輕鬆，流水席適合鄉村大家族",budget:""},
+  {cat:"預訂服務",task:"預訂婚宴場地 ⚡",owner:"b",fixedDate:"2026-07-31",deadlineOffset:null,note:"熱門場地需提前6-12個月預訂，選完日期後立即預訂！",budget:"約NT$1,000-3,000/桌"},
+  {cat:"預訂服務",task:"預訂婚紗工作室（含拍婚紗照）",owner:"b",fixedDate:"2026-07-31",deadlineOffset:null,note:"建議比較3-5家婚紗工作室，看過作品集再決定",budget:"套裝約NT$30,000-100,000+"},
+  {cat:"預訂服務",task:"預訂婚禮攝影師",owner:"b",fixedDate:"2026-08-31",deadlineOffset:null,note:"熱門攝影師需提前半年以上預訂",budget:"約NT$25,000-80,000"},
+  {cat:"預訂服務",task:"預訂婚禮錄影（選配）",owner:"b",fixedDate:"2026-08-31",deadlineOffset:null,note:"可錄製完整婚禮或只拍精華影片",budget:"約NT$15,000-50,000"},
+  {cat:"預訂服務",task:"預訂新娘秘書（新秘）⚡",owner:"f",fixedDate:"2026-08-31",deadlineOffset:null,note:"好的新秘非常搶手，務必提早預訂！",budget:"約NT$10,000-25,000"},
+  {cat:"預訂服務",task:"確定婚禮主持人",owner:"b",fixedDate:"2026-08-31",deadlineOffset:null,note:"可請熟識友人或聘請專業婚禮主持人",budget:"專業主持約NT$8,000-20,000"},
+  {cat:"預訂服務",task:"規劃蜜月行程",owner:"b",fixedDate:"2026-09-30",deadlineOffset:null,note:"早鳥訂票，機票住宿越早越便宜",budget:"依目的地"},
+  {cat:"法律文件",task:"準備結婚登記所需文件",owner:"b",fixedDate:null,deadlineOffset:-30,note:"需準備：戶口名簿正本、身分證、印章、2位證人及其身分證",budget:"免費"},
+  {cat:"法律文件",task:"辦理結婚登記（戶政事務所）",owner:"b",fixedDate:null,deadlineOffset:0,note:"台灣結婚登記為重要法律程序，勿遺忘！",budget:"免費"},
+  {cat:"男方準備",task:"確認聘金金額（與雙方家長商議）",owner:"m",fixedDate:"2026-07-31",deadlineOffset:null,note:"台灣傳統習俗，男方給女方大聘，金額依雙方協議",budget:"通常NT$60,000-200,000+"},
+  {cat:"男方準備",task:"準備聘禮（禮餅、糖果、罐頭等六禮）",owner:"m",fixedDate:null,deadlineOffset:-60,note:"台灣傳統六禮，禮餅用於女方分送親友告知喜訊",budget:"NT$10,000-30,000"},
+  {cat:"男方準備",task:"購買結婚對戒",owner:"m",fixedDate:"2026-09-30",deadlineOffset:null,note:"男方準備結婚對戒，依女方喜好選擇款式，部分需4-8週製作",budget:"NT$20,000-100,000+"},
+  {cat:"男方準備",task:"準備/租借西裝或禮服（建議兩套）",owner:"m",fixedDate:"2026-10-31",deadlineOffset:null,note:"建議至少備兩套：迎娶西裝＋婚宴晚宴服",budget:"租借NT$3,000-8,000"},
+  {cat:"男方準備",task:"規劃及布置婚房",owner:"m",fixedDate:"2026-10-31",deadlineOffset:null,note:"台灣傳統男方備婚房，喜被由女方嫁妝帶入",budget:"依房況"},
+  {cat:"男方準備",task:"安排迎娶車隊",owner:"m",fixedDate:null,deadlineOffset:-30,note:"需準備新娘車＋隨行車隊，車頭綁紅緞帶、鮮花裝飾",budget:"主車NT$5,000-15,000/輛"},
+  {cat:"男方準備",task:"準備新娘捧花",owner:"m",fixedDate:null,deadlineOffset:-7,note:"由男方準備新娘手捧花（玫瑰或牡丹），花店訂製",budget:"NT$2,000-5,000"},
+  {cat:"男方準備",task:"準備迎娶紅包（開門紅包/壓桌錢）",owner:"m",fixedDate:null,deadlineOffset:-7,note:"開門紅包給女方弟妹，壓桌錢給女方家長",budget:"NT$3,000-10,000"},
+  {cat:"男方準備",task:"準備迎娶祭祖供品",owner:"m",fixedDate:null,deadlineOffset:-3,note:"出發迎娶前在男方家祭祖，準備三牲或簡單供品及香燭",budget:"NT$1,000-3,000"},
+  {cat:"女方準備",task:"挑選婚紗（白紗/禮服）及試穿",owner:"f",fixedDate:"2026-08-31",deadlineOffset:null,note:"婚紗工作室提供多套禮服試穿，可選白紗＋晚宴服各一套",budget:"含婚紗套裝費用"},
+  {cat:"女方準備",task:"新娘試妝（與新秘確認造型方向）",owner:"f",fixedDate:null,deadlineOffset:-45,note:"提前試妝確認妝容顏色、持久度，讓新秘了解喜好",budget:"通常含在新秘費用中"},
+  {cat:"女方準備",task:"準備嫁妝（棉被、臉盆、傳統物品）",owner:"f",fixedDate:null,deadlineOffset:-60,note:"台灣傳統嫁妝含新棉被、臉盆（內放四喜果）、剪刀、尺、梳子",budget:"NT$10,000-50,000"},
+  {cat:"女方準備",task:"準備子孫桶（台灣傳統嫁妝）",owner:"f",fixedDate:null,deadlineOffset:-60,note:"內放桂圓、花生、瓜子等，象徵多子多孫",budget:"NT$1,000-3,000"},
+  {cat:"女方準備",task:"準備出嫁扇子（過門扇）",owner:"f",fixedDate:null,deadlineOffset:-7,note:"出門上車前向後丟扇（丟掉壞脾氣）；車內需另備一把扇子",budget:"NT$200-500"},
+  {cat:"女方準備",task:"規劃出嫁當天儀式流程",owner:"f",fixedDate:null,deadlineOffset:-30,note:"梳妝→等待迎娶→男方到達開門→拜別父母→丟扇→出發",budget:""},
+  {cat:"拍攝製作",task:"拍攝婚紗照",owner:"b",fixedDate:"2026-09-30",deadlineOffset:null,note:"建議婚禮半年前完成，以利製作婚禮投影等素材",budget:"含婚紗套裝"},
+  {cat:"拍攝製作",task:"設計婚禮喜帖",owner:"b",fixedDate:"2026-10-15",deadlineOffset:null,note:"可客製化設計或選用婚紗工作室模板",budget:"NT$3,000-15,000"},
+  {cat:"拍攝製作",task:"印製喜帖（多印10-20張備用）",owner:"b",fixedDate:"2026-10-31",deadlineOffset:null,note:"",budget:"NT$5-20/張"},
+  {cat:"拍攝製作",task:"寄送喜帖（婚禮前6-8週）",owner:"b",fixedDate:null,deadlineOffset:-42,note:"台灣習慣親手遞送或郵寄，過早或過晚都不禮貌",budget:"郵資費用"},
+  {cat:"拍攝製作",task:"製作婚禮投影（照片MV）",owner:"b",fixedDate:null,deadlineOffset:-30,note:"播放於婚宴進場時，呈現兩人戀愛故事",budget:"NT$3,000-8,000（外製）"},
+  {cat:"婚禮用品",task:"確認婚宴菜單與桌數",owner:"b",fixedDate:null,deadlineOffset:-60,note:"與餐廳確認菜色、素食桌需求、酒水安排",budget:""},
+  {cat:"婚禮用品",task:"準備喜糖/囍餅（婚禮回禮）",owner:"b",fixedDate:null,deadlineOffset:-14,note:"準備給未出席親友的喜糖，或席間回禮",budget:"NT$100-300/份"},
+  {cat:"婚禮用品",task:"準備桌上禮/小物（選配）",owner:"b",fixedDate:null,deadlineOffset:-14,note:"為每桌準備小禮物，如香氛蠟燭、客製化小物",budget:"NT$100-500/桌"},
+  {cat:"婚禮用品",task:"確認音響/燈光設備",owner:"b",fixedDate:null,deadlineOffset:-30,note:"確認場地是否含音響燈光，如需外租提前安排",budget:"NT$5,000-15,000"},
+  {cat:"婚禮用品",task:"製作婚禮座位表與桌卡",owner:"b",fixedDate:null,deadlineOffset:-14,note:"依賓客關係安排桌位，印製桌卡",budget:""},
+  {cat:"最終確認",task:"確認場地最終細節與桌位安排",owner:"b",fixedDate:null,deadlineOffset:-30,note:"確認進場動線、佈置、花藝、投影設備等",budget:""},
+  {cat:"最終確認",task:"製作婚禮當天完整行程表",owner:"b",fixedDate:null,deadlineOffset:-14,note:"含迎娶時間、婚宴開始、各段流程時間點",budget:""},
+  {cat:"最終確認",task:"婚宴彩排（與司儀、場地確認）",owner:"b",fixedDate:null,deadlineOffset:-14,note:"確認流程、測試投影音響",budget:""},
+  {cat:"最終確認",task:"整理賓客最終名單並回報場地",owner:"b",fixedDate:null,deadlineOffset:-14,note:"確認最終出席人數，通知場地備餐數量",budget:""},
+  {cat:"最終確認",task:"分配婚禮當天工作給親友",owner:"b",fixedDate:null,deadlineOffset:-14,note:"收禮金人員、帶位人員、婚禮道具管理等",budget:""},
+  {cat:"🎊 婚禮",task:"🎉 結婚典禮 & 婚宴",owner:"b",fixedDate:null,deadlineOffset:0,note:"迎娶→法律登記→婚宴進場→謝親恩→送客",budget:""},
+  {cat:"婚後事項",task:"蜜月旅行",owner:"b",fixedDate:null,deadlineOffset:7,note:"提前訂好機票與住宿",budget:"依目的地"},
+  {cat:"婚後事項",task:"歸寧（回娘家，帶雞腿）",owner:"b",fixedDate:null,deadlineOffset:3,note:"台灣習俗：婚後第3天夫妻一同回娘家，帶雞腿，不可在娘家過夜",budget:""},
+  {cat:"婚後事項",task:"更新身分證（如女方改姓）",owner:"f",fixedDate:null,deadlineOffset:30,note:"到戶政事務所辦理，帶身分證、戶口名簿",budget:"免費"},
+  {cat:"婚後事項",task:"更換護照（如有改姓）",owner:"f",fixedDate:null,deadlineOffset:60,note:"先完成身分證更名，再至外交部申請新護照",budget:"NT$900-1,300"},
+  {cat:"婚後事項",task:"寄送感謝卡給親友",owner:"b",fixedDate:null,deadlineOffset:30,note:"表達感謝，可附上婚禮照片",budget:"NT$20-50/張"},
+  {cat:"婚後事項",task:"洗印婚禮照片/製作紀念相本",owner:"b",fixedDate:null,deadlineOffset:75,note:"與攝影師確認交稿時間，製作紀念相本",budget:"NT$5,000-20,000"},
+];
+
+const CAT_COLOR={
+  "確認規劃":"#7B5EA7","預訂服務":"#3A6EA5","法律文件":"#6A4C93",
+  "男方準備":"#2E6DA4","女方準備":"#C9506E","拍攝製作":"#2E7D57",
+  "婚禮用品":"#9B6B2E","最終確認":"#B44A4A","🎊 婚禮":"#C9506E","婚後事項":"#2E7D57"
+};
+
+// Month index helpers (base: 2026-05 = 0)
+const BASE_Y=2026, BASE_M=5;
+function monthIdx(y,m){return (y-BASE_Y)*12+(m-BASE_M);}
+function idxToDate(idx){
+  const totalM = BASE_M-1+idx;
+  return new Date(BASE_Y+Math.floor(totalM/12), totalM%12, 1);
+}
+const MONTH_ZH=["一","二","三","四","五","六","七","八","九","十","十一","十二"];
+
+// Gantt items: [cat, task, owner, startOff, endOff, barType, isFixed]
+// isFixed=false → offsets are months relative to wedding (0=wedding month, negative=before)
+// isFixed=true  → startOff/endOff are [year,month] absolute dates
+const GANTT=[
+  ["確認規劃","求婚完成 ✓","b",    [2026,4],[2026,4],"done",true],
+  ["確認規劃","家長面談 05/30","b",[2026,5],[2026,5],"done",true],
+  ["確認規劃","確定婚禮日期","b",  -7,-6,"b",false],
+  ["確認規劃","確認總預算","b",    -7,-6,"b",false],
+  ["確認規劃","賓客名單初稿","b",  -6,-5,"b",false],
+  ["確認規劃","確定婚宴形式","b",  -7,-6,"b",false],
+  ["預訂服務","預訂婚宴場地 ⚡","b",-6,-4,"b",false],
+  ["預訂服務","預訂婚紗工作室","b",-6,-4,"b",false],
+  ["預訂服務","預訂婚禮攝影師","b",-6,-3,"b",false],
+  ["預訂服務","預訂婚禮錄影","b",  -6,-3,"b",false],
+  ["預訂服務","預訂新娘秘書 ⚡","f",-6,-3,"f",false],
+  ["預訂服務","確定婚禮主持人","b",-5,-3,"b",false],
+  ["預訂服務","規劃蜜月行程","b",  -5,-2,"b",false],
+  ["法律文件","準備結婚登記文件","b",-4,-1,"b",false],
+  ["法律文件","辦理結婚登記","b",  -1,0,"b",false],
+  ["男方準備","確認聘金金額","m",  -6,-4,"m",false],
+  ["男方準備","準備聘禮","m",      -3,-1,"m",false],
+  ["男方準備","購買結婚對戒","m",  -5,-2,"m",false],
+  ["男方準備","準備西裝/禮服","m", -2,-1,"m",false],
+  ["男方準備","婚房布置規劃","m",  -3,-1,"m",false],
+  ["男方準備","安排迎娶車隊","m",  -2,-1,"m",false],
+  ["男方準備","準備迎娶道具","m",  -1,0,"m",false],
+  ["女方準備","挑選婚紗","f",      -5,-3,"f",false],
+  ["女方準備","準備嫁妝","f",      -3,-1,"f",false],
+  ["女方準備","新娘試妝","f",      -2,-1,"f",false],
+  ["女方準備","出嫁儀式規劃","f",  -2,-1,"f",false],
+  ["拍攝製作","拍攝婚紗照","b",    -4,-2,"b",false],
+  ["拍攝製作","設計印製喜帖","b",  -3,-2,"b",false],
+  ["拍攝製作","寄送喜帖","b",      -2,-1,"b",false],
+  ["拍攝製作","婚禮投影製作","b",  -2,-1,"b",false],
+  ["婚禮用品","確認菜單與桌數","b",-3,-1,"b",false],
+  ["婚禮用品","準備喜糖/囍餅","b", -1,0,"b",false],
+  ["婚禮用品","準備桌上禮","b",    -1,0,"b",false],
+  ["最終確認","確認場地細節","b",  -1,0,"b",false],
+  ["最終確認","婚禮行程表","b",    -1,0,"b",false],
+  ["最終確認","婚宴彩排","b",      -1,0,"b",false],
+  ["最終確認","賓客最終名單","b",  -1,0,"b",false],
+  ["🎊 婚禮","🎊 結婚典禮 & 婚宴","b",0,0,"wed",false],
+  ["婚後事項","蜜月旅行","b",       1,2,"b",false],
+  ["婚後事項","歸寧（回娘家）","b", 1,1,"b",false],
+  ["婚後事項","更新身分證/護照","f",1,2,"f",false],
+  ["婚後事項","寄送感謝卡","b",     1,2,"b",false],
+  ["婚後事項","洗印婚禮照片","b",   1,3,"b",false],
+];
+
+// Male/Female specific items
+const MALE=[
+  {cat:"提親談婚",task:"主導家長面談（提親）",deadline:"2026/05/30",deadlineOffset:null,fixedDate:"2026-05-30",note:"台灣傳統由男方主導，雙方家長一同見面商議婚事"},
+  {cat:"提親談婚",task:"確認婚期（與長輩商議吉日）",deadline:"2026/06/30",deadlineOffset:null,fixedDate:"2026-06-30",note:"台灣重視農民曆吉日，婚期需雙方家長確認"},
+  {cat:"聘禮準備",task:"確認聘金金額",deadline:"2026/07/31",deadlineOffset:null,fixedDate:"2026-07-31",note:"聘金（大聘）是台灣傳統，表達對女方家庭的尊重",budget:"通常NT$60,000-200,000+"},
+  {cat:"聘禮準備",task:"準備聘禮（六禮/十二禮）",deadline:"婚禮前2個月",deadlineOffset:-60,fixedDate:null,note:"基本聘禮：禮餅、糖果、罐頭、豬肉、酒等",budget:"NT$10,000-30,000"},
+  {cat:"聘禮準備",task:"訂製禮餅（分送女方親友用）",deadline:"婚禮前2個月",deadlineOffset:-60,fixedDate:null,note:"女方收禮餅後分送親友告知喜訊",budget:"NT$5,000-20,000"},
+  {cat:"婚戒準備",task:"購買結婚對戒",deadline:"2026/09/30",deadlineOffset:null,fixedDate:"2026-09-30",note:"男方準備結婚對戒，提前挑選，部分需4-8週製作",budget:"NT$20,000-100,000+"},
+  {cat:"婚房準備",task:"確定婚後居住地點",deadline:"2026/08/31",deadlineOffset:null,fixedDate:"2026-08-31",note:"台灣傳統男方備婚房，現代多依兩人協議"},
+  {cat:"婚房準備",task:"婚房布置（基本傢俱、臥室）",deadline:"2026/10/31",deadlineOffset:null,fixedDate:"2026-10-31",note:"喜被由女方嫁妝帶入，男方需備床架、床墊等基本設施"},
+  {cat:"迎娶準備",task:"安排迎娶車隊",deadline:"婚禮前1個月",deadlineOffset:-30,fixedDate:null,note:"需準備新娘車＋隨行車隊，車頭綁紅緞帶",budget:"主車NT$5,000-15,000/輛"},
+  {cat:"迎娶準備",task:"準備新娘捧花",deadline:"婚禮前1週",deadlineOffset:-7,fixedDate:null,note:"由男方準備新娘手捧花（玫瑰或牡丹）",budget:"NT$2,000-5,000"},
+  {cat:"迎娶準備",task:"準備迎娶紅包（開門紅包/壓桌錢）",deadline:"婚禮前1週",deadlineOffset:-7,fixedDate:null,note:"開門紅包給女方弟妹，壓桌錢給女方家長",budget:"NT$3,000-10,000"},
+  {cat:"迎娶準備",task:"準備鞭炮（依地區習俗）",deadline:"婚禮前1週",deadlineOffset:-7,fixedDate:null,note:"部分縣市有燃放限制，請先確認當地規定",budget:"NT$500-2,000"},
+  {cat:"迎娶準備",task:"準備迎娶祭祖供品",deadline:"婚禮前3天",deadlineOffset:-3,fixedDate:null,note:"出發迎娶前在男方家祭祖，準備三牲或簡單供品及香燭",budget:"NT$1,000-3,000"},
+  {cat:"迎娶儀式",task:"熟記迎娶當天完整流程",deadline:"婚禮當天",deadlineOffset:0,fixedDate:null,note:"①男方祭祖→②車隊出發→③到女方家→④開門紅包→⑤接新娘→⑥拜別父母→⑦新娘丟扇→⑧返回"},
+  {cat:"服裝準備",task:"準備西裝/禮服（建議兩套）",deadline:"2026/10/31",deadlineOffset:null,fixedDate:"2026-10-31",note:"迎娶西裝＋婚宴晚宴服，可購買或租借",budget:"租借NT$3,000-8,000"},
+  {cat:"婚宴籌備",task:"主導婚宴場地選定與預訂",deadline:"2026/07/31",deadlineOffset:null,fixedDate:"2026-07-31",note:"台灣傳統男方主辦婚宴"},
+  {cat:"婚宴籌備",task:"確認婚宴男方賓客名單",deadline:"2026/08/31",deadlineOffset:null,fixedDate:"2026-08-31",note:"列出男方親戚、同學、同事，確認參加意願"},
+  {cat:"婚宴籌備",task:"確認婚宴流程與主持人",deadline:"2026/10/31",deadlineOffset:null,fixedDate:"2026-10-31",note:"與主持人確認進場方式、換裝時間、謝親恩等環節"},
+];
+
+const FEMALE=[
+  {cat:"婚紗造型",task:"挑選婚紗（白紗/禮服）及試穿",deadline:"2026/08/31",deadlineOffset:null,fixedDate:"2026-08-31",note:"婚紗工作室提供多套禮服試穿，可選白紗＋晚宴服",budget:"含婚紗套裝費用"},
+  {cat:"婚紗造型",task:"預約新娘秘書（新秘）⚡",deadline:"2026/08/31",deadlineOffset:null,fixedDate:"2026-08-31",note:"新秘負責婚禮當天髮妝，好的新秘非常搶手，務必提早！",budget:"NT$10,000-25,000"},
+  {cat:"婚紗造型",task:"新娘試妝（與新秘確認造型方向）",deadline:"婚禮前1-2個月",deadlineOffset:-45,fixedDate:null,note:"提前試妝確認妝容顏色、持久度，讓新秘了解喜好"},
+  {cat:"婚紗造型",task:"準備婚禮當天配件（耳環、項鍊等）",deadline:"婚禮前1個月",deadlineOffset:-30,fixedDate:null,note:"可搭配婚紗工作室飾品或自行準備"},
+  {cat:"嫁妝準備",task:"確認嫁妝清單（與家長商議）",deadline:"2026/08/31",deadlineOffset:null,fixedDate:"2026-08-31",note:"台灣傳統嫁妝象徵娘家祝福，現代多象徵性準備"},
+  {cat:"嫁妝準備",task:"準備新棉被（喜被）",deadline:"婚禮前2個月",deadlineOffset:-60,fixedDate:null,note:"台灣習俗新娘帶新被褥入婚房，現代多準備2-4套",budget:"NT$5,000-20,000"},
+  {cat:"嫁妝準備",task:"準備傳統嫁妝物品（臉盆組等）",deadline:"婚禮前2個月",deadlineOffset:-60,fixedDate:null,note:"臉盆內放桂圓、紅棗、花生、瓜子（四喜）＋剪刀、尺、梳子",budget:"NT$3,000-10,000"},
+  {cat:"嫁妝準備",task:"準備子孫桶（傳統嫁妝之一）",deadline:"婚禮前2個月",deadlineOffset:-60,fixedDate:null,note:"內放桂圓、花生、瓜子等，象徵多子多孫",budget:"NT$1,000-3,000"},
+  {cat:"出嫁儀式",task:"了解出嫁當天完整流程",deadline:"婚禮前1個月",deadlineOffset:-30,fixedDate:null,note:"梳妝→等待迎娶→開門→拜別父母（哭嫁）→丟扇→出發"},
+  {cat:"出嫁儀式",task:"準備出嫁扇子（過門扇）",deadline:"婚禮前1週",deadlineOffset:-7,fixedDate:null,note:"出門上車前向後丟扇；車內需另備一把扇子",budget:"NT$200-500"},
+  {cat:"出嫁儀式",task:"拜別父母儀式（哭嫁）準備",deadline:"婚禮當天",deadlineOffset:0,fixedDate:null,note:"向父母行禮拜謝，此時落淚為佳"},
+  {cat:"出嫁儀式",task:"記住：出嫁後不可回頭張望",deadline:"婚禮當天",deadlineOffset:0,fixedDate:null,note:"台灣習俗，象徵對婚後生活一心一意"},
+  {cat:"婚後回門",task:"歸寧準備（婚後3天回娘家）",deadline:"婚後3天內",deadlineOffset:3,fixedDate:null,note:"台灣習俗婚後第3天夫妻一同回娘家「歸寧」"},
+  {cat:"婚後回門",task:"準備雞腿帶回娘家",deadline:"婚後3天",deadlineOffset:3,fixedDate:null,note:"台灣習俗歸寧要帶雞腿，且不可在娘家過夜",budget:"NT$200-500"},
+  {cat:"婚後手續",task:"辦理姓氏更改（如決定改姓）",deadline:"婚後1個月",deadlineOffset:30,fixedDate:null,note:"到戶政事務所辦理，帶身分證、戶口名簿"},
+  {cat:"婚後手續",task:"更換護照（如有改姓）",deadline:"婚後2個月",deadlineOffset:60,fixedDate:null,note:"先完成身分證更名，再至外交部申請新護照",budget:"NT$900-1,300"},
+  {cat:"婚後手續",task:"通知銀行/保險等機構更名",deadline:"婚後3個月",deadlineOffset:90,fixedDate:null,note:"銀行帳戶、保險契約、信用卡等（如改姓）"},
+];
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let filterMode='all';
+const st={};
+
+function saveState(){try{localStorage.setItem('ws26',JSON.stringify(st));}catch(e){}}
+function loadState(){try{return JSON.parse(localStorage.getItem('ws26')||'{}');}catch(e){return {};}}
+const saved=loadState();
+CL.forEach((item,i)=>{st['cl'+i]=saved['cl'+i]??(item.done||false);});
+MALE.forEach((item,i)=>{st['ml'+i]=saved['ml'+i]??false;});
+FEMALE.forEach((item,i)=>{st['fe'+i]=saved['fe'+i]??false;});
+
+// ═══════════════════════════════════════════════
+// DATE HELPERS
+// ═══════════════════════════════════════════════
+function getWeddingDate(){
+  const v=document.getElementById('wedding-input').value;
+  const [y,m,d]=v.split('-').map(Number);
+  return new Date(y,m-1,d);
+}
+function getDeadlineDate(item,weddingDate){
+  if(item.deadlineOffset!==null){
+    const d=new Date(weddingDate);
+    d.setDate(d.getDate()+item.deadlineOffset);
+    return d;
+  } else if(item.fixedDate){
+    const [y,m,d]=item.fixedDate.split('-').map(Number);
+    return new Date(y,m-1,d);
+  }
+  return null;
+}
+function getStatus(item,i,keyPrefix,weddingDate){
+  const key=keyPrefix+i;
+  if(st[key]) return 'done';
+  const d=getDeadlineDate(item,weddingDate);
+  if(!d) return 'none';
+  const today=new Date(); today.setHours(0,0,0,0);
+  const dl=new Date(d); dl.setHours(0,0,0,0);
+  const diff=(dl-today)/(1000*60*60*24);
+  if(diff<0) return 'over';
+  if(diff<=30) return 'soon';
+  return 'ok';
+}
+function fmtDate(d){
+  if(!d) return '';
+  return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+}
+function daysLeft(d){
+  const today=new Date(); today.setHours(0,0,0,0);
+  const dl=new Date(d); dl.setHours(0,0,0,0);
+  return Math.ceil((dl-today)/(1000*60*60*24));
+}
+
+// ═══════════════════════════════════════════════
+// SETTINGS BAR
+// ═══════════════════════════════════════════════
+function updateSettingsBar(){
+  const today=new Date();
+  document.getElementById('today-display').textContent=`今日：${today.getFullYear()}/${String(today.getMonth()+1).padStart(2,'0')}/${String(today.getDate()).padStart(2,'0')}`;
+  const wd=getWeddingDate();
+  const diff=Math.ceil((wd-today)/(1000*60*60*24));
+  if(diff>0) document.getElementById('days-countdown').textContent=`距婚禮還有 ${diff} 天`;
+  else if(diff===0) document.getElementById('days-countdown').textContent='今天是婚禮日！🎊';
+  else document.getElementById('days-countdown').textContent=`婚禮已過 ${-diff} 天`;
+
+  let over=0,soon=0,ok=0;
+  CL.forEach((item,i)=>{
+    const s=getStatus(item,i,'cl',wd);
+    if(s==='over') over++;
+    else if(s==='soon') soon++;
+    else if(s==='ok') ok++;
+  });
+  document.getElementById('cnt-over').textContent=over;
+  document.getElementById('cnt-soon').textContent=soon;
+  document.getElementById('cnt-ok').textContent=ok;
+}
+
+// ═══════════════════════════════════════════════
+// CHECKLIST RENDER
+// ═══════════════════════════════════════════════
+function ownerBadge(o){
+  if(o==='m') return '<span class="badge badge-m">💙 男方</span>';
+  if(o==='f') return '<span class="badge badge-f">🌸 女方</span>';
+  return '<span class="badge badge-b">💜 雙方</span>';
+}
+
+function renderCL(){
+  const wd=getWeddingDate();
+  const container=document.getElementById('cl-body');
+  let html='';
+  let prevCat='';
+  CL.forEach((item,i)=>{
+    const st_val=getStatus(item,i,'cl',wd);
+    const isDone=st_val==='done';
+    const dl=getDeadlineDate(item,wd);
+    const dlStr=dl?fmtDate(dl):'';
+    const dlClass=st_val==='over'?'dl-over':st_val==='soon'?'dl-soon':'';
+    const stBadge=st_val==='done'?'<span class="status-badge st-done">✅ 完成</span>':
+      st_val==='over'?'<span class="status-badge st-over">🔴 逾期</span>':
+      st_val==='soon'?`<span class="status-badge st-soon">🟡 ${daysLeft(dl)}天後</span>`:
+      st_val==='ok'?'<span class="status-badge st-ok">🟢 正常</span>':'';
+
+    if(item.cat!==prevCat){
+      if(prevCat) html+='</div>';
+      const c=CAT_COLOR[item.cat]||'#555';
+      html+=`<div class="cl-sec-hdr" style="background:${c}" onclick="toggleSec(this)"><span>${item.cat}</span><span>▼</span></div><div class="cl-sec-body">`;
+      prevCat=item.cat;
+    }
+    const itemClass=`cl-item ${isDone?'is-done':''} ${st_val==='over'?'is-overdue':st_val==='soon'?'is-soon':''} owner-${item.owner}`;
+    html+=`<div class="${itemClass}" id="cli-${i}">
+      <div class="cl-chk ${isDone?'checked':''}" onclick="toggleCL(${i})"></div>
+      <div class="cl-body">
+        <div class="cl-task">${item.task}</div>
+        <div class="cl-meta">
+          ${ownerBadge(item.owner)}
+          ${stBadge}
+          ${dlStr?`<span class="dl-text ${dlClass}">📅 ${dlStr}</span>`:''}
+          ${item.budget?`<span class="budget-tag">💰 ${item.budget}</span>`:''}
+        </div>
+        ${item.note?`<div class="cl-note">${item.note}</div>`:''}
+      </div>
+    </div>`;
+  });
+  if(prevCat) html+='</div>';
+  container.innerHTML=html;
+  updateProgress();
+  applyFilters();
+}
+
+function toggleSec(hdr){
+  const body=hdr.nextElementSibling;
+  const arrow=hdr.querySelector('span:last-child');
+  if(body.style.display==='none'){body.style.display='';arrow.textContent='▼';}
+  else{body.style.display='none';arrow.textContent='▶';}
+}
+
+function toggleCL(i){
+  st['cl'+i]=!st['cl'+i];
+  saveState();
+  renderCL();
+  updateSettingsBar();
+}
+
+function updateProgress(){
+  const total=CL.length;
+  const done=CL.filter((_,i)=>st['cl'+i]).length;
+  const pct=Math.round(done/total*100);
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-fill').textContent=pct+'%';
+  document.getElementById('prog-text').textContent=`${done} / ${total} 完成`;
+}
+
+function setFilter(f){
+  filterMode=f;
+  const map={'all':'a-all','m':'a-m','f':'a-f','b':'a-b','over':'a-over','soon':'a-soon'};
+  ['f-all','f-m','f-f','f-b','f-over','f-soon'].forEach(id=>{
+    document.getElementById(id).className='fbtn';
+  });
+  const fid={'all':'f-all','m':'f-m','f':'f-f','b':'f-b','over':'f-over','soon':'f-soon'}[f];
+  if(fid) document.getElementById(fid).className='fbtn '+map[f];
+  applyFilters();
+}
+
+function applyFilters(){
+  const q=(document.getElementById('search-q').value||'').toLowerCase();
+  const hideDone=document.getElementById('hide-done').checked;
+  const wd=getWeddingDate();
+  document.querySelectorAll('#cl-body .cl-item').forEach(el=>{
+    const i=parseInt(el.id.replace('cli-',''));
+    const item=CL[i];
+    const st_val=getStatus(item,i,'cl',wd);
+    const isDone=st_val==='done';
+    const taskTxt=el.querySelector('.cl-task').textContent.toLowerCase();
+    const noteTxt=(el.querySelector('.cl-note')||{textContent:''}).textContent.toLowerCase();
+    const matchQ=!q||taskTxt.includes(q)||noteTxt.includes(q);
+    let matchOwner=true;
+    if(filterMode==='m') matchOwner=item.owner==='m'||item.owner==='b';
+    else if(filterMode==='f') matchOwner=item.owner==='f'||item.owner==='b';
+    else if(filterMode==='b') matchOwner=item.owner==='b';
+    else if(filterMode==='over') matchOwner=st_val==='over';
+    else if(filterMode==='soon') matchOwner=st_val==='soon';
+    const matchDone=!hideDone||!isDone;
+    el.classList.toggle('hidden',!(matchQ&&matchOwner&&matchDone));
+  });
+}
+
+// ═══════════════════════════════════════════════
+// GANTT RENDER
+// ═══════════════════════════════════════════════
+function renderGantt(){
+  const wd=getWeddingDate();
+  const today=new Date(); today.setHours(0,0,0,0);
+  const todayY=today.getFullYear(), todayM=today.getMonth()+1;
+  const wedY=wd.getFullYear(), wedM=wd.getMonth()+1;
+
+  // Helper: add n months to date
+  function addMon(d,n){return new Date(d.getFullYear(),d.getMonth()+n,1);}
+
+  // Dynamic month range: always from 2026/05; end at wedding+4 months
+  const fixedStart=new Date(2026,4,1);
+  const dynStart=addMon(wd,-8);
+  const rangeStart=dynStart<fixedStart?dynStart:fixedStart;
+  const rangeEnd=addMon(wd,4);
+  const ganttMonths=[];
+  let cur=new Date(rangeStart);
+  while(cur<=rangeEnd){ganttMonths.push([cur.getFullYear(),cur.getMonth()+1]);cur=addMon(cur,1);}
+
+  // Get bar start/end [year,month] for each GANTT item
+  // isFixed=true: startOff/endOff are [year,month] absolute
+  // isFixed=false: offsets are months relative to wedding (0=wedding month)
+  function getBarRange(item){
+    const [,,,startOff,endOff,,isFixed]=item;
+    if(isFixed){return {sy:startOff[0],sm:startOff[1],ey:endOff[0],em:endOff[1]};}
+    const sd=addMon(wd,startOff), ed=addMon(wd,endOff);
+    return {sy:sd.getFullYear(),sm:sd.getMonth()+1,ey:ed.getFullYear(),em:ed.getMonth()+1};
+  }
+
+  // Info bar
+  const todayLabel=`今日：${todayY}年${MONTH_ZH[today.getMonth()]}月`;
+  const wedLabel=`婚禮：${wedY}年${MONTH_ZH[wd.getMonth()]}月`;
+  document.getElementById('gantt-info').innerHTML=
+    `📍 <strong>${todayLabel}</strong>（黃色欄）｜💒 <strong>${wedLabel}</strong>（粉紅欄）｜灰色欄 = 已過去的月份`;
+
+  // Build header — group columns by year
+  const yearCount={};
+  ganttMonths.forEach(([y])=>{yearCount[y]=(yearCount[y]||0)+1;});
+  let thYear=`<tr><th colspan="3" style="background:#6A4C93">▼ 月份</th>`;
+  Object.entries(yearCount).forEach(([y,cnt])=>{
+    thYear+=`<th colspan="${cnt}" style="background:#5A3C83;font-size:.76rem">${y}</th>`;
+  });
+  thYear+='</tr>';
+
+  let thMonths=`<tr><th style="min-width:78px">類別</th><th style="min-width:170px">項目</th><th style="min-width:45px">負責</th>`;
+  ganttMonths.forEach(([y,m])=>{
+    const isCur=(y===todayY&&m===todayM);
+    const isWed=(y===wedY&&m===wedM);
+    const isPast=y<todayY||(y===todayY&&m<todayM);
+    const cls=isCur?'th-today':isWed?'th-wed':isPast?'th-past':'';
+    const extra=isCur?' ▼今日':'';
+    thMonths+=`<th class="${cls}">${MONTH_ZH[m-1]}月${extra}</th>`;
+  });
+  thMonths+='</tr>';
+  document.getElementById('g-head').innerHTML=thYear+thMonths;
+
+  // Build body
+  const barCls={m:'bar-m',f:'bar-f',b:'bar-b'};
+  let prevCat=''; let html='';
+  GANTT.forEach(item=>{
+    const [cat,task,owner]=item;
+    const barType=item[5]||'b';
+    const {sy,sm,ey,em}=getBarRange(item);
+    const isWedRow=(barType==='wed');
+    const isDoneRow=(barType==='done');
+    let catCell=cat!==prevCat?`<td class="g-cat" style="color:${CAT_COLOR[cat]||'#333'}">${cat}</td>`:'<td></td>';
+    prevCat=cat;
+    let ownCls=owner==='m'?'o-m':owner==='f'?'o-f':'o-b';
+    let ownLbl=owner==='m'?'男':owner==='f'?'女':'雙';
+    let cells='';
+    ganttMonths.forEach(([y,m])=>{
+      const isCurCol=(y===todayY&&m===todayM);
+      const isWedCol=(y===wedY&&m===wedM);
+      const isPast=y<todayY||(y===todayY&&m<todayM);
+      // Check if this month falls within bar range
+      const inBar=(y>sy||(y===sy&&m>=sm))&&(y<ey||(y===ey&&m<=em));
+      if(inBar){
+        const isStart=(y===sy&&m===sm), isEnd=(y===ey&&m===em);
+        let bcls=isDoneRow?'bar-done':isWedRow?'bar-wed':barCls[owner]||'bar-b';
+        let txt=isStart&&isEnd?(isWedRow?'🎊':'●'):isStart?'▶':isEnd?'◀':'─';
+        let extraCls=isCurCol?' col-today':isWedCol?' col-wed':'';
+        cells+=`<td class="g-bar ${bcls}${extraCls}">${txt}</td>`;
+      } else {
+        let extraCls=isCurCol?' col-today':isWedCol?' col-wed':isPast?' col-past':'';
+        cells+=`<td class="g-bar${extraCls}"></td>`;
+      }
+    });
+    html+=`<tr>${catCell}<td class="g-task">${task}</td><td><span class="g-own ${ownCls}">${ownLbl}</span></td>${cells}</tr>`;
+  });
+  document.getElementById('g-body').innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════
+// TIMELINE
+// ═══════════════════════════════════════════════
+function renderTimeline(){
+  const wd=getWeddingDate();
+  const today=new Date(); today.setHours(0,0,0,0);
+  const wedIdx=monthIdx(wd.getFullYear(),wd.getMonth()+1);
+  const todayIdx=monthIdx(today.getFullYear(),today.getMonth()+1);
+
+  const tl=[
+    {month:"2026 五月",mi:0,tasks:[{t:"求婚完成 (04/17) ✓",o:"b"},{t:"家長面談 (05/30)",o:"b"},{t:"確認婚禮總預算",o:"b"},{t:"確定婚宴形式",o:"b"}]},
+    {month:"2026 六月",mi:1,tasks:[{t:"確定婚禮日期（查農民曆/擇日師）",o:"b"},{t:"確認賓客名單初稿",o:"b"},{t:"開始接洽婚宴場地",o:"b"}]},
+    {month:"2026 七月",mi:2,tasks:[{t:"預訂婚宴場地 ⚡",o:"b"},{t:"預訂婚紗工作室",o:"b"},{t:"確認聘金金額",o:"m"}]},
+    {month:"2026 八月",mi:3,tasks:[{t:"預訂婚禮攝影師、錄影",o:"b"},{t:"預訂新娘秘書（新秘）⚡",o:"f"},{t:"確定婚禮主持人",o:"b"},{t:"挑選婚紗及試穿",o:"f"},{t:"確認嫁妝清單",o:"f"}]},
+    {month:"2026 九月",mi:4,tasks:[{t:"拍攝婚紗照",o:"b"},{t:"購買結婚對戒",o:"m"},{t:"規劃蜜月行程",o:"b"},{t:"準備結婚登記文件",o:"b"}]},
+    {month:"2026 十月",mi:5,tasks:[{t:"設計婚禮喜帖",o:"b"},{t:"印製喜帖",o:"b"},{t:"準備西裝/禮服",o:"m"},{t:"準備嫁妝物品",o:"f"},{t:"婚房布置",o:"m"}]},
+    {month:"2026 十一月",mi:6,tasks:[{t:"寄送喜帖（婚禮前6-8週）",o:"b"},{t:"新娘試妝",o:"f"},{t:"製作婚禮投影MV",o:"b"},{t:"安排迎娶車隊",o:"m"},{t:"確認場地最終細節",o:"b"},{t:"製作婚禮當天行程表",o:"b"}]},
+    {month:`${wd.getFullYear()} ${MONTH_ZH[wd.getMonth()]}月（婚禮！）`,mi:wedIdx,wedding:true,tasks:[{t:"準備迎娶道具、捧花、紅包",o:"m"},{t:"婚宴彩排、最終確認",o:"b"},{t:"辦理結婚登記",o:"b"},{t:"🎊 結婚典禮 & 婚宴",o:"b"}]},
+    {month:"婚後",mi:wedIdx+1,tasks:[{t:"蜜月旅行",o:"b"},{t:"歸寧（回娘家，帶雞腿）",o:"b"},{t:"更新身分證/護照",o:"f"},{t:"寄送感謝卡",o:"b"},{t:"洗印婚禮照片/製作相本",o:"b"}]},
+  ];
+
+  const ownerTags={
+    m:'<span class="tl-tag" style="background:var(--blue-l);color:var(--blue)">💙男</span>',
+    f:'<span class="tl-tag" style="background:var(--pink-l);color:var(--pink)">🌸女</span>',
+    b:'<span class="tl-tag" style="background:var(--purple-l);color:var(--purple)">💜雙</span>',
+  };
+  let html='';
+  tl.forEach(({month,mi,wedding,tasks})=>{
+    const isPast=mi<todayIdx;
+    const isCurrent=mi===todayIdx;
+    const dotCls=isPast?'d-done':isCurrent?'d-current':wedding?'d-wed':'';
+    const monthBg=wedding?'var(--pink)':isCurrent?'var(--orange)':isPast?'var(--green)':'var(--purple-l)';
+    const monthC=wedding||isCurrent||isPast?'#fff':'var(--purple)';
+    const prefix=wedding?'🎊 ':isCurrent?'📍 今月 ':isPast?'✓ ':'';
+    html+=`<div class="tl-item"><div class="tl-dot ${dotCls}"></div>
+      <div class="tl-month" style="background:${monthBg};color:${monthC}">${prefix}${month}</div>
+      <ul class="tl-tasks">`;
+    tasks.forEach(({t,o})=>{ html+=`<li>${ownerTags[o]||''} ${t}</li>`; });
+    html+='</ul></div>';
+  });
+  document.getElementById('tl-body').innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════
+// SPECIFIC LISTS (Male / Female)
+// ═══════════════════════════════════════════════
+function renderSpecific(containerId,items,prefix){
+  const wd=getWeddingDate();
+  const container=document.getElementById(containerId);
+  let html=''; let prevCat='';
+  items.forEach((item,i)=>{
+    const key=prefix+i;
+    const isDone=st[key]||false;
+    const dl=item.deadlineOffset!==null?
+      (()=>{const d=new Date(wd);d.setDate(d.getDate()+item.deadlineOffset);return d;})():
+      item.fixedDate?(()=>{const[y,m,d]=item.fixedDate.split('-').map(Number);return new Date(y,m-1,d);})():null;
+    const today=new Date();today.setHours(0,0,0,0);
+    const diff=dl?Math.ceil((dl-today)/(1000*60*60*24)):null;
+    const stVal=isDone?'done':diff===null?'none':diff<0?'over':diff<=30?'soon':'ok';
+    const stBadge=stVal==='done'?'<span class="status-badge st-done">✅ 完成</span>':
+      stVal==='over'?'<span class="status-badge st-over">🔴 逾期</span>':
+      stVal==='soon'?`<span class="status-badge st-soon">🟡 ${diff}天後</span>`:
+      stVal==='ok'?'<span class="status-badge st-ok">🟢 正常</span>':'';
+    const dlStr=dl?fmtDate(dl):'';
+
+    if(item.cat!==prevCat){
+      if(prevCat) html+='</div>';
+      const catKey=item.cat; const c=CAT_COLOR[catKey]||'#3A6EA5';
+      html+=`<div class="cl-sec-hdr" style="background:${c}" onclick="toggleSec(this)"><span>${item.cat}</span><span>▼</span></div><div class="cl-sec-body">`;
+      prevCat=item.cat;
+    }
+    const rowCls=`cl-item ${isDone?'is-done':''} ${stVal==='over'?'is-overdue':stVal==='soon'?'is-soon':''}`;
+    html+=`<div class="${rowCls}" id="${key}">
+      <div class="cl-chk ${isDone?'checked':''}" onclick="toggleSpec('${key}','${containerId}','${prefix}',${i})"></div>
+      <div class="cl-body">
+        <div class="cl-task">${item.task}</div>
+        <div class="cl-meta">
+          ${stBadge}
+          ${dlStr?`<span class="dl-text ${stVal==='over'?'dl-over':stVal==='soon'?'dl-soon':''}">📅 ${dlStr}</span>`:''}
+          ${item.budget?`<span class="budget-tag">💰 ${item.budget}</span>`:''}
+        </div>
+        ${item.note?`<div class="cl-note">${item.note}</div>`:''}
+      </div>
+    </div>`;
+  });
+  if(prevCat) html+='</div>';
+  container.innerHTML=html;
+}
+
+function toggleSpec(key,containerId,prefix,i){
+  st[key]=!st[key];
+  saveState();
+  renderSpecific(containerId,prefix==='ml'?MALE:FEMALE,prefix);
+}
+
+// ═══════════════════════════════════════════════
+// TAB SWITCH
+// ═══════════════════════════════════════════════
+function switchTab(name,btn){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='gantt') renderGantt();
+  if(name==='timeline') renderTimeline();
+}
+
+// ═══════════════════════════════════════════════
+// WEDDING DATE CHANGE
+// ═══════════════════════════════════════════════
+document.getElementById('wedding-input').addEventListener('change',()=>{
+  updateSettingsBar();
+  renderCL();
+  renderGantt();
+  renderTimeline();
+  renderSpecific('male-body',MALE,'ml');
+  renderSpecific('female-body',FEMALE,'fe');
+});
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+updateSettingsBar();
+renderCL();
+renderGantt();
+renderTimeline();
+renderSpecific('male-body',MALE,'ml');
+renderSpecific('female-body',FEMALE,'fe');
+</script>
+</body>
+</html>
