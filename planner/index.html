@@ -149,6 +149,19 @@ table.gantt tr:hover td{filter:brightness(.96);}
   .tab-btn{padding:.45rem .7rem;font-size:.8rem;}
   .settings-bar{gap:.7rem;}
 }
+
+/* ── SYNC BAR ── */
+.sync-bar{background:#fff;border-bottom:2px solid #e8e0f0;padding:.5rem 1.2rem;display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;font-size:.83rem;}
+.sync-status{font-weight:600;padding:.25rem .7rem;border-radius:12px;}
+.sync-status.ok{background:#D4EDDA;color:#28a745;}
+.sync-status.loading{background:#FFF9C4;color:#e67e00;}
+.sync-status.offline{background:#FFE0B2;color:#e65100;}
+.sync-status.unset{background:#f0f0f0;color:#888;}
+.sync-btn{font-size:.78rem;padding:.2rem .65rem;border:1px solid #ccc;border-radius:8px;background:#fff;cursor:pointer;}
+.sync-btn:hover{background:#f5f5f5;}
+.gas-setup{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;}
+.gas-setup input{font-size:.78rem;padding:.22rem .5rem;border:1px solid #ccc;border-radius:6px;width:280px;}
+.gas-setup input:focus{outline:none;border-color:var(--purple);}
 </style>
 </head>
 <body>
@@ -166,6 +179,17 @@ table.gantt tr:hover td{filter:brightness(.96);}
   <span class="stat-badge stat-overdue" id="badge-over" style="cursor:pointer" onclick="setFilter('over')">⚠️ 逾期 <span id="cnt-over">0</span> 項</span>
   <span class="stat-badge stat-soon" id="badge-soon" style="cursor:pointer" onclick="setFilter('soon')">🕐 即將到期 <span id="cnt-soon">0</span> 項</span>
   <span class="stat-badge stat-ok" id="badge-ok">✅ 正常 <span id="cnt-ok">0</span> 項</span>
+</div>
+
+<div class="sync-bar">
+  <span class="sync-status unset" id="sync-status">⚙️ 未連線</span>
+  <div class="gas-setup" id="gas-setup" style="display:none">
+    <input type="text" id="gas-url-input" placeholder="貼上 GAS 網址（與記帳 App 相同）">
+    <button class="sync-btn" onclick="saveGasUrl()">儲存</button>
+    <button class="sync-btn" onclick="hideGasSetup()">取消</button>
+  </div>
+  <button class="sync-btn" id="sync-setup-btn" onclick="toggleGasSetup()">設定同步</button>
+  <button class="sync-btn" id="sync-now-btn" style="display:none" onclick="loadFromGas()">🔄 立即同步</button>
 </div>
 
 <div class="progress-section">
@@ -420,8 +444,84 @@ const FEMALE=[
 let filterMode='all';
 const st={};
 
+// ── localStorage（離線備份）──
 function saveState(){try{localStorage.setItem('ws26',JSON.stringify(st));}catch(e){}}
 function loadState(){try{return JSON.parse(localStorage.getItem('ws26')||'{}');}catch(e){return {};}}
+
+// ── GAS 同步 ──
+function getGasUrl(){return localStorage.getItem('gasUrl')||'';}
+function saveGasUrl(){
+  const url=document.getElementById('gas-url-input').value.trim();
+  if(!url){alert('請輸入 GAS 網址');return;}
+  localStorage.setItem('gasUrl',url);
+  hideGasSetup();
+  loadFromGas();
+}
+function toggleGasSetup(){
+  const box=document.getElementById('gas-setup');
+  const visible=box.style.display!=='none';
+  if(!visible){
+    document.getElementById('gas-url-input').value=getGasUrl();
+    box.style.display='flex';
+  } else {
+    box.style.display='none';
+  }
+}
+function hideGasSetup(){document.getElementById('gas-setup').style.display='none';}
+
+function setSyncStatus(type,text){
+  const el=document.getElementById('sync-status');
+  el.className='sync-status '+type;
+  el.textContent=text;
+  const nowBtn=document.getElementById('sync-now-btn');
+  nowBtn.style.display=(type==='unset')?'none':'inline-block';
+}
+
+function gasGet(params){
+  const url=getGasUrl();
+  if(!url) return Promise.resolve(null);
+  const qs=Object.entries(params).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
+  return fetch(url+'?'+qs).then(r=>r.json()).catch(()=>null);
+}
+function gasPost(payload){
+  const url=getGasUrl();
+  if(!url) return Promise.resolve(null);
+  return fetch(url+'?payload='+encodeURIComponent(JSON.stringify(payload)))
+    .then(r=>r.json()).catch(()=>null);
+}
+
+async function loadFromGas(){
+  const url=getGasUrl();
+  if(!url){setSyncStatus('unset','⚙️ 未連線');return;}
+  setSyncStatus('loading','🔄 同步中...');
+  const res=await gasGet({action:'getChecklist'});
+  if(!res||!res.ok){setSyncStatus('offline','⚠️ 離線模式');return;}
+  // 把 GAS 資料覆蓋到 st
+  Object.entries(res.data).forEach(([k,v])=>{st[k]=v;});
+  saveState();
+  setSyncStatus('ok','✅ 已同步');
+  renderCL();
+  renderSpecific('male-body',MALE,'ml');
+  renderSpecific('female-body',FEMALE,'fe');
+  updateSettingsBar();
+  // 同步婚期
+  const sRes=await gasGet({action:'getSettings'});
+  if(sRes&&sRes.weddingDate){
+    document.getElementById('wedding-input').value=sRes.weddingDate;
+    updateSettingsBar();renderCL();renderGantt();renderTimeline();
+    renderSpecific('male-body',MALE,'ml');renderSpecific('female-body',FEMALE,'fe');
+  }
+}
+
+async function syncItemToGas(key,value){
+  const url=getGasUrl();
+  if(!url) return;
+  setSyncStatus('loading','🔄 同步中...');
+  const res=await gasPost({action:'setChecklistItem',key,value});
+  setSyncStatus(res&&res.ok?'ok':'offline', res&&res.ok?'✅ 已同步':'⚠️ 離線模式');
+}
+
+// ── 初始化狀態 ──
 const saved=loadState();
 CL.forEach((item,i)=>{st['cl'+i]=saved['cl'+i]??(item.done||false);});
 MALE.forEach((item,i)=>{st['ml'+i]=saved['ml'+i]??false;});
@@ -554,6 +654,7 @@ function toggleSec(hdr){
 function toggleCL(i){
   st['cl'+i]=!st['cl'+i];
   saveState();
+  syncItemToGas('cl'+i, st['cl'+i]);
   renderCL();
   updateSettingsBar();
 }
@@ -787,6 +888,7 @@ function renderSpecific(containerId,items,prefix){
 function toggleSpec(key,containerId,prefix,i){
   st[key]=!st[key];
   saveState();
+  syncItemToGas(key, st[key]);
   renderSpecific(containerId,prefix==='ml'?MALE:FEMALE,prefix);
 }
 
@@ -823,6 +925,8 @@ renderGantt();
 renderTimeline();
 renderSpecific('male-body',MALE,'ml');
 renderSpecific('female-body',FEMALE,'fe');
+// 有 GAS URL 就自動同步，沒有就顯示未連線
+if(getGasUrl()){loadFromGas();}else{setSyncStatus('unset','⚙️ 未連線');}
 </script>
 </body>
 </html>

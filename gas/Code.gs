@@ -28,6 +28,8 @@ function doGet(e) {
         }));
       case 'getSettings':
         return _jsonRes(getSettings());
+      case 'getChecklist':
+        return _jsonRes(getChecklist());
       default:
         return _jsonRes({ ok: false, error: `Unknown action: ${action}` });
     }
@@ -56,6 +58,8 @@ function _handleAction(body) {
         return _jsonRes(deleteTransaction(body.txnId));
       case 'updateSettings':
         return _jsonRes(updateSettings(body.settings));
+      case 'setChecklistItem':
+        return _jsonRes(setChecklistItem(body.key, body.value));
       case 'updateAvatar':
         return _jsonRes(_updateAvatar(body.userId, body.avatarBase64));
       case 'scanReceipt':
