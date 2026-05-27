@@ -150,6 +150,20 @@ table.gantt tr:hover td{filter:brightness(.96);}
   .settings-bar{gap:.7rem;}
 }
 
+/* ── DATE RANGE ── */
+.cl-date-row{display:flex;align-items:center;gap:.4rem;margin-top:.3rem;flex-wrap:wrap;}
+.cl-date-range{font-size:.78rem;color:#7B5EA7;background:#f3eeff;padding:.1rem .45rem;border-radius:6px;font-weight:500;}
+.cl-date-range.is-custom{background:#e8f4ff;color:#3A6EA5;}
+.edit-date-btn{font-size:.7rem;color:#aaa;cursor:pointer;background:none;border:none;padding:0 .2rem;line-height:1;}
+.edit-date-btn:hover{color:#7B5EA7;}
+.reset-date-btn{font-size:.7rem;color:#C9506E;cursor:pointer;background:none;border:none;padding:0;text-decoration:underline;}
+.date-edit-box{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-top:.3rem;background:#fff8f0;border:1px solid #ffd9a0;border-radius:8px;padding:.4rem .6rem;}
+.date-edit-box label{font-size:.75rem;color:#888;}
+.date-edit-box input[type=date]{font-size:.78rem;padding:.15rem .35rem;border:1px solid #ccc;border-radius:5px;}
+.date-save-btn{font-size:.75rem;padding:.18rem .55rem;background:#7B5EA7;color:#fff;border:none;border-radius:6px;cursor:pointer;}
+.date-save-btn:hover{background:#6A4C93;}
+.date-cancel-btn{font-size:.75rem;padding:.18rem .55rem;background:#eee;color:#555;border:none;border-radius:6px;cursor:pointer;}
+
 /* ── SYNC BAR ── */
 .sync-bar{background:#fff;border-bottom:2px solid #e8e0f0;padding:.5rem 1.2rem;display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;font-size:.83rem;}
 .sync-status{font-weight:600;padding:.25rem .7rem;border-radius:12px;}
@@ -496,8 +510,10 @@ async function loadFromGas(){
   setSyncStatus('loading','🔄 同步中...');
   const res=await gasGet({action:'getChecklist'});
   if(!res||!res.ok){setSyncStatus('offline','⚠️ 離線模式');return;}
-  // 把 GAS 資料覆蓋到 st
+  // 把 GAS 勾選狀態覆蓋到 st
   Object.entries(res.data).forEach(([k,v])=>{st[k]=v;});
+  // 把 GAS 日期 override 載入 customDates
+  if(res.dates) Object.entries(res.dates).forEach(([k,v])=>{customDates[k]=v;});
   saveState();
   setSyncStatus('ok','✅ 已同步');
   renderCL();
@@ -519,6 +535,72 @@ async function syncItemToGas(key,value){
   setSyncStatus('loading','🔄 同步中...');
   const res=await gasPost({action:'setChecklistItem',key,value});
   setSyncStatus(res&&res.ok?'ok':'offline', res&&res.ok?'✅ 已同步':'⚠️ 離線模式');
+}
+
+// ── 日期 Override（key → {startDate, endDate}）──
+const customDates={};
+
+function fmtDateDisplay(yyyymmdd){
+  if(!yyyymmdd) return '';
+  const [y,m,d]=yyyymmdd.split('-');
+  return `${parseInt(m)}/${parseInt(d)}`;
+}
+function getItemDates(keyPrefix, i, weddingDate){
+  const key=keyPrefix+i;
+  if(customDates[key]) return customDates[key];
+  // 用原本邏輯計算截止日
+  const arr = keyPrefix==='cl'?CL:keyPrefix==='ml'?MALE:FEMALE;
+  const item=arr[i];
+  if(!item) return {startDate:'',endDate:''};
+  const d=getDeadlineDate(item,weddingDate);
+  const endDate=d?d.toISOString().slice(0,10):'';
+  return {startDate:'',endDate};
+}
+function dateToYYYYMMDD(d){
+  if(!d) return '';
+  if(typeof d==='string') return d;
+  return d.toISOString().slice(0,10);
+}
+
+async function saveDateOverride(key, startDate, endDate){
+  customDates[key]={startDate, endDate};
+  await gasPost({action:'setChecklistDate', key, startDate, endDate});
+}
+async function resetDateOverride(key){
+  delete customDates[key];
+  await gasPost({action:'resetChecklistDate', key});
+}
+
+function openDateEdit(key, prefix, idx){
+  const wd=getWeddingDate();
+  const current=getItemDates(prefix, idx, wd);
+  const isCustom=!!customDates[key];
+  const row=document.getElementById('daterow-'+key);
+  if(!row) return;
+  row.innerHTML=`
+    <div class="date-edit-box">
+      <label>開始日</label>
+      <input type="date" id="de-start-${key}" value="${current.startDate||''}">
+      <label>截止日</label>
+      <input type="date" id="de-end-${key}" value="${current.endDate||''}">
+      <button class="date-save-btn" onclick="commitDateEdit('${key}','${prefix}',${idx})">儲存</button>
+      <button class="date-cancel-btn" onclick="renderCL()">取消</button>
+      ${isCustom?`<button class="reset-date-btn" onclick="doResetDate('${key}','${prefix}',${idx})">重置預設</button>`:''}
+    </div>`;
+}
+async function commitDateEdit(key, prefix, idx){
+  const s=document.getElementById('de-start-'+key)?.value||'';
+  const e=document.getElementById('de-end-'+key)?.value||'';
+  await saveDateOverride(key,s,e);
+  renderCL();
+  renderSpecific('male-body',MALE,'ml');
+  renderSpecific('female-body',FEMALE,'fe');
+}
+async function doResetDate(key, prefix, idx){
+  await resetDateOverride(key);
+  renderCL();
+  renderSpecific('male-body',MALE,'ml');
+  renderSpecific('female-body',FEMALE,'fe');
 }
 
 // ── 初始化狀態 ──
@@ -623,6 +705,12 @@ function renderCL(){
       html+=`<div class="cl-sec-hdr" style="background:${c}" onclick="toggleSec(this)"><span>${item.cat}</span><span>▼</span></div><div class="cl-sec-body">`;
       prevCat=item.cat;
     }
+    const key='cl'+i;
+    const isCustom=!!customDates[key];
+    const dates=getItemDates('cl',i,wd);
+    const startDisp=dates.startDate?fmtDateDisplay(dates.startDate):'';
+    const endDisp=dates.endDate?fmtDateDisplay(dates.endDate):'';
+    const dateLabel=startDisp&&endDisp?`${startDisp} ～ ${endDisp}`:endDisp?`截止 ${endDisp}`:startDisp?`從 ${startDisp}`:'';
     const itemClass=`cl-item ${isDone?'is-done':''} ${st_val==='over'?'is-overdue':st_val==='soon'?'is-soon':''} owner-${item.owner}`;
     html+=`<div class="${itemClass}" id="cli-${i}">
       <div class="cl-chk ${isDone?'checked':''}" onclick="toggleCL(${i})"></div>
@@ -631,8 +719,12 @@ function renderCL(){
         <div class="cl-meta">
           ${ownerBadge(item.owner)}
           ${stBadge}
-          ${dlStr?`<span class="dl-text ${dlClass}">📅 ${dlStr}</span>`:''}
           ${item.budget?`<span class="budget-tag">💰 ${item.budget}</span>`:''}
+        </div>
+        <div class="cl-date-row" id="daterow-${key}">
+          ${dateLabel?`<span class="cl-date-range ${isCustom?'is-custom':''}">📅 ${dateLabel}${isCustom?' ✏':''}  </span>`:'<span style="font-size:.75rem;color:#bbb">尚無日期</span>'}
+          <button class="edit-date-btn" onclick="openDateEdit('${key}','cl',${i})" title="編輯日期">✏️</button>
+          ${isCustom?`<button class="reset-date-btn" onclick="doResetDate('${key}','cl',${i})">重置</button>`:''}
         </div>
         ${item.note?`<div class="cl-note">${item.note}</div>`:''}
       </div>

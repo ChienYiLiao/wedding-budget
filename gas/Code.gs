@@ -60,6 +60,10 @@ function _handleAction(body) {
         return _jsonRes(updateSettings(body.settings));
       case 'setChecklistItem':
         return _jsonRes(setChecklistItem(body.key, body.value));
+      case 'setChecklistDate':
+        return _jsonRes(setChecklistDate(body.key, body.startDate, body.endDate));
+      case 'resetChecklistDate':
+        return _jsonRes(resetChecklistDate(body.key));
       case 'updateAvatar':
         return _jsonRes(_updateAvatar(body.userId, body.avatarBase64));
       case 'scanReceipt':
