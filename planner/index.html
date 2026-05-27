@@ -631,7 +631,14 @@ function getDeadlineDate(item,weddingDate){
 function getStatus(item,i,keyPrefix,weddingDate){
   const key=keyPrefix+i;
   if(st[key]) return 'done';
-  const d=getDeadlineDate(item,weddingDate);
+  // 優先使用自訂截止日，否則用原始計算
+  let d;
+  if(customDates[key]&&customDates[key].endDate){
+    const[y,m,dd]=customDates[key].endDate.split('-').map(Number);
+    d=new Date(y,m-1,dd);
+  } else {
+    d=getDeadlineDate(item,weddingDate);
+  }
   if(!d) return 'none';
   const today=new Date(); today.setHours(0,0,0,0);
   const dl=new Date(d); dl.setHours(0,0,0,0);
@@ -687,50 +694,65 @@ function renderCL(){
   const wd=getWeddingDate();
   const container=document.getElementById('cl-body');
   let html='';
-  let prevCat='';
-  CL.forEach((item,i)=>{
-    const st_val=getStatus(item,i,'cl',wd);
-    const isDone=st_val==='done';
-    const dl=getDeadlineDate(item,wd);
-    const dlStr=dl?fmtDate(dl):'';
-    const dlClass=st_val==='over'?'dl-over':st_val==='soon'?'dl-soon':'';
-    const stBadge=st_val==='done'?'<span class="status-badge st-done">✅ 完成</span>':
-      st_val==='over'?'<span class="status-badge st-over">🔴 逾期</span>':
-      st_val==='soon'?`<span class="status-badge st-soon">🟡 ${daysLeft(dl)}天後</span>`:
-      st_val==='ok'?'<span class="status-badge st-ok">🟢 正常</span>':'';
 
-    if(item.cat!==prevCat){
-      if(prevCat) html+='</div>';
-      const c=CAT_COLOR[item.cat]||'#555';
-      html+=`<div class="cl-sec-hdr" style="background:${c}" onclick="toggleSec(this)"><span>${item.cat}</span><span>▼</span></div><div class="cl-sec-body">`;
-      prevCat=item.cat;
-    }
-    const key='cl'+i;
-    const isCustom=!!customDates[key];
-    const dates=getItemDates('cl',i,wd);
-    const startDisp=dates.startDate?fmtDateDisplay(dates.startDate):'';
-    const endDisp=dates.endDate?fmtDateDisplay(dates.endDate):'';
-    const dateLabel=startDisp&&endDisp?`${startDisp} ～ ${endDisp}`:endDisp?`截止 ${endDisp}`:startDisp?`從 ${startDisp}`:'';
-    const itemClass=`cl-item ${isDone?'is-done':''} ${st_val==='over'?'is-overdue':st_val==='soon'?'is-soon':''} owner-${item.owner}`;
-    html+=`<div class="${itemClass}" id="cli-${i}">
-      <div class="cl-chk ${isDone?'checked':''}" onclick="toggleCL(${i})"></div>
-      <div class="cl-body">
-        <div class="cl-task">${item.task}</div>
-        <div class="cl-meta">
-          ${ownerBadge(item.owner)}
-          ${stBadge}
-          ${item.budget?`<span class="budget-tag">💰 ${item.budget}</span>`:''}
-        </div>
-        <div class="cl-date-row" id="daterow-${key}">
-          ${dateLabel?`<span class="cl-date-range ${isCustom?'is-custom':''}">📅 ${dateLabel}${isCustom?' ✏':''}  </span>`:'<span style="font-size:.75rem;color:#bbb">尚無日期</span>'}
-          <button class="edit-date-btn" onclick="openDateEdit('${key}','cl',${i})" title="編輯日期">✏️</button>
-          ${isCustom?`<button class="reset-date-btn" onclick="doResetDate('${key}','cl',${i})">重置</button>`:''}
-        </div>
-        ${item.note?`<div class="cl-note">${item.note}</div>`:''}
-      </div>
-    </div>`;
+  // 1. 依類別分組（保留類別原始順序）
+  const catMap={}, catOrder=[];
+  CL.forEach((item,i)=>{
+    if(!catMap[item.cat]){catMap[item.cat]=[];catOrder.push(item.cat);}
+    catMap[item.cat].push({item,i});
   });
-  if(prevCat) html+='</div>';
+
+  // 2. 每個類別內依截止日排序（無日期放最後）
+  catOrder.forEach(cat=>{
+    catMap[cat].sort((a,b)=>{
+      const da=getItemDates('cl',a.i,wd).endDate||'';
+      const db=getItemDates('cl',b.i,wd).endDate||'';
+      if(!da&&!db) return 0;
+      if(!da) return 1;
+      if(!db) return -1;
+      return da.localeCompare(db);
+    });
+  });
+
+  // 3. 渲染
+  catOrder.forEach(cat=>{
+    const c=CAT_COLOR[cat]||'#555';
+    html+=`<div class="cl-sec-hdr" style="background:${c}" onclick="toggleSec(this)"><span>${cat}</span><span>▼</span></div><div class="cl-sec-body">`;
+    catMap[cat].forEach(({item,i})=>{
+      const st_val=getStatus(item,i,'cl',wd);
+      const isDone=st_val==='done';
+      const dates=getItemDates('cl',i,wd);
+      const dl=dates.endDate?(()=>{const[y,m,d]=dates.endDate.split('-').map(Number);return new Date(y,m-1,d);})():null;
+      const stBadge=st_val==='done'?'<span class="status-badge st-done">✅ 完成</span>':
+        st_val==='over'?'<span class="status-badge st-over">🔴 逾期</span>':
+        st_val==='soon'?`<span class="status-badge st-soon">🟡 ${daysLeft(dl)}天後</span>`:
+        st_val==='ok'?'<span class="status-badge st-ok">🟢 正常</span>':'';
+      const key='cl'+i;
+      const isCustom=!!customDates[key];
+      const startDisp=dates.startDate?fmtDateDisplay(dates.startDate):'';
+      const endDisp=dates.endDate?fmtDateDisplay(dates.endDate):'';
+      const dateLabel=startDisp&&endDisp?`${startDisp} ～ ${endDisp}`:endDisp?`截止 ${endDisp}`:startDisp?`從 ${startDisp}`:'';
+      const itemClass=`cl-item ${isDone?'is-done':''} ${st_val==='over'?'is-overdue':st_val==='soon'?'is-soon':''} owner-${item.owner}`;
+      html+=`<div class="${itemClass}" id="cli-${i}">
+        <div class="cl-chk ${isDone?'checked':''}" onclick="toggleCL(${i})"></div>
+        <div class="cl-body">
+          <div class="cl-task">${item.task}</div>
+          <div class="cl-meta">
+            ${ownerBadge(item.owner)}
+            ${stBadge}
+            ${item.budget?`<span class="budget-tag">💰 ${item.budget}</span>`:''}
+          </div>
+          <div class="cl-date-row" id="daterow-${key}">
+            ${dateLabel?`<span class="cl-date-range ${isCustom?'is-custom':''}">📅 ${dateLabel}${isCustom?' ✏':''}  </span>`:'<span style="font-size:.75rem;color:#bbb">尚無日期</span>'}
+            <button class="edit-date-btn" onclick="openDateEdit('${key}','cl',${i})" title="編輯日期">✏️</button>
+            ${isCustom?`<button class="reset-date-btn" onclick="doResetDate('${key}','cl',${i})">重置</button>`:''}
+          </div>
+          ${item.note?`<div class="cl-note">${item.note}</div>`:''}
+        </div>
+      </div>`;
+    });
+    html+='</div>';
+  });
   container.innerHTML=html;
   updateProgress();
   applyFilters();
@@ -894,38 +916,62 @@ function renderGantt(){
 function renderTimeline(){
   const wd=getWeddingDate();
   const today=new Date(); today.setHours(0,0,0,0);
-  const wedIdx=monthIdx(wd.getFullYear(),wd.getMonth()+1);
-  const todayIdx=monthIdx(today.getFullYear(),today.getMonth()+1);
+  const wedYM=`${wd.getFullYear()}-${String(wd.getMonth()+1).padStart(2,'0')}`;
+  const todayYM=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}`;
 
-  const tl=[
-    {month:"2026 五月",mi:0,tasks:[{t:"求婚完成 (04/17) ✓",o:"b"},{t:"家長面談 (05/30)",o:"b"},{t:"確認婚禮總預算",o:"b"},{t:"確定婚宴形式",o:"b"}]},
-    {month:"2026 六月",mi:1,tasks:[{t:"確定婚禮日期（查農民曆/擇日師）",o:"b"},{t:"確認賓客名單初稿",o:"b"},{t:"開始接洽婚宴場地",o:"b"}]},
-    {month:"2026 七月",mi:2,tasks:[{t:"預訂婚宴場地 ⚡",o:"b"},{t:"預訂婚紗工作室",o:"b"},{t:"確認聘金金額",o:"m"}]},
-    {month:"2026 八月",mi:3,tasks:[{t:"預訂婚禮攝影師、錄影",o:"b"},{t:"預訂新娘秘書（新秘）⚡",o:"f"},{t:"確定婚禮主持人",o:"b"},{t:"挑選婚紗及試穿",o:"f"},{t:"確認嫁妝清單",o:"f"}]},
-    {month:"2026 九月",mi:4,tasks:[{t:"拍攝婚紗照",o:"b"},{t:"購買結婚對戒",o:"m"},{t:"規劃蜜月行程",o:"b"},{t:"準備結婚登記文件",o:"b"}]},
-    {month:"2026 十月",mi:5,tasks:[{t:"設計婚禮喜帖",o:"b"},{t:"印製喜帖",o:"b"},{t:"準備西裝/禮服",o:"m"},{t:"準備嫁妝物品",o:"f"},{t:"婚房布置",o:"m"}]},
-    {month:"2026 十一月",mi:6,tasks:[{t:"寄送喜帖（婚禮前6-8週）",o:"b"},{t:"新娘試妝",o:"f"},{t:"製作婚禮投影MV",o:"b"},{t:"安排迎娶車隊",o:"m"},{t:"確認場地最終細節",o:"b"},{t:"製作婚禮當天行程表",o:"b"}]},
-    {month:`${wd.getFullYear()} ${MONTH_ZH[wd.getMonth()]}月（婚禮！）`,mi:wedIdx,wedding:true,tasks:[{t:"準備迎娶道具、捧花、紅包",o:"m"},{t:"婚宴彩排、最終確認",o:"b"},{t:"辦理結婚登記",o:"b"},{t:"🎊 結婚典禮 & 婚宴",o:"b"}]},
-    {month:"婚後",mi:wedIdx+1,tasks:[{t:"蜜月旅行",o:"b"},{t:"歸寧（回娘家，帶雞腿）",o:"b"},{t:"更新身分證/護照",o:"f"},{t:"寄送感謝卡",o:"b"},{t:"洗印婚禮照片/製作相本",o:"b"}]},
-  ];
+  // 從 CL 依截止日月份分組
+  const groups={};
+  CL.forEach((item,i)=>{
+    const dates=getItemDates('cl',i,wd);
+    const ym=dates.endDate?dates.endDate.slice(0,7):'none';
+    if(!groups[ym]) groups[ym]=[];
+    groups[ym].push({item,i});
+  });
+
+  // 月份排序，無日期放最後
+  const sortedYMs=Object.keys(groups).filter(ym=>ym!=='none').sort();
+  if(groups['none']) sortedYMs.push('none');
 
   const ownerTags={
     m:'<span class="tl-tag" style="background:var(--blue-l);color:var(--blue)">💙男</span>',
     f:'<span class="tl-tag" style="background:var(--pink-l);color:var(--pink)">🌸女</span>',
     b:'<span class="tl-tag" style="background:var(--purple-l);color:var(--purple)">💜雙</span>',
   };
+
   let html='';
-  tl.forEach(({month,mi,wedding,tasks})=>{
-    const isPast=mi<todayIdx;
-    const isCurrent=mi===todayIdx;
-    const dotCls=isPast?'d-done':isCurrent?'d-current':wedding?'d-wed':'';
-    const monthBg=wedding?'var(--pink)':isCurrent?'var(--orange)':isPast?'var(--green)':'var(--purple-l)';
-    const monthC=wedding||isCurrent||isPast?'#fff':'var(--purple)';
-    const prefix=wedding?'🎊 ':isCurrent?'📍 今月 ':isPast?'✓ ':'';
+  sortedYMs.forEach(ym=>{
+    const items=groups[ym];
+    let monthLabel,dotCls,monthBg,monthC,prefix;
+    if(ym==='none'){
+      monthLabel='未排定';dotCls='';monthBg='#eee';monthC='#888';prefix='';
+    } else {
+      const[y,m]=ym.split('-').map(Number);
+      monthLabel=`${y} ${MONTH_ZH[m-1]}月`;
+      const isWed=ym===wedYM;
+      const isPast=ym<todayYM;
+      const isCurrent=ym===todayYM;
+      dotCls=isPast?'d-done':isCurrent?'d-current':isWed?'d-wed':'';
+      monthBg=isWed?'var(--pink)':isCurrent?'var(--orange)':isPast?'var(--green)':'var(--purple-l)';
+      monthC=isWed||isCurrent||isPast?'#fff':'var(--purple)';
+      prefix=isWed?'🎊 ':isCurrent?'📍 今月 ':isPast?'✓ ':'';
+      if(isWed) monthLabel+='（婚禮！）';
+    }
+
+    // 月內依截止日排序
+    items.sort((a,b)=>{
+      const da=getItemDates('cl',a.i,wd).endDate||'';
+      const db=getItemDates('cl',b.i,wd).endDate||'';
+      return da.localeCompare(db);
+    });
+
     html+=`<div class="tl-item"><div class="tl-dot ${dotCls}"></div>
-      <div class="tl-month" style="background:${monthBg};color:${monthC}">${prefix}${month}</div>
+      <div class="tl-month" style="background:${monthBg};color:${monthC}">${prefix}${monthLabel}</div>
       <ul class="tl-tasks">`;
-    tasks.forEach(({t,o})=>{ html+=`<li>${ownerTags[o]||''} ${t}</li>`; });
+    items.forEach(({item,i})=>{
+      const isDone=st['cl'+i];
+      const style=isDone?'text-decoration:line-through;opacity:.5':'';
+      html+=`<li style="${style}">${ownerTags[item.owner]||''} ${item.task}</li>`;
+    });
     html+='</ul></div>';
   });
   document.getElementById('tl-body').innerHTML=html;
