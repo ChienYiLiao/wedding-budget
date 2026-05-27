@@ -93,6 +93,7 @@ wedding-budget/
 │   ├── Dashboard.gs              # Dashboard 資料彙整
 │   ├── Stats.gs                  # 統計分析（跨月範圍查詢）
 │   ├── Receipt.gs                # AI 收據辨識（Gemini）
+│   ├── Checklist.gs              # 婚禮規劃頁勾選狀態讀寫
 │   └── setup-guide.md            # GAS 部署說明（給人看的）
 ├── planner/
 │   └── index.html                # 婚禮規劃頁（部署至 GitHub Pages，老婆可存取）
